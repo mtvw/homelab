@@ -20,6 +20,7 @@ later LXC/VM-workloads.
 | `environments/homelab` | OpenTofu root module voor deze homelab |
 | `docs/bootstrap.md` | Handmatige day-0 stappen die OpenTofu niet betrouwbaar zelf kan doen |
 | `docs/authentication.md` | API-token en SSH-keuzes |
+| `docs/decisions.md` | Vastgelegde keuzes voor deze homelab |
 | `docs/ipam.md` | IP-plan voor nodes en toekomstige workloads |
 | `docs/questions.md` | Open vragen voordat resources effectief worden aangemaakt |
 | `docs/storage.md` | NAS/NFS en PBS storageplan |

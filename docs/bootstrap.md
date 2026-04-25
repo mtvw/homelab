@@ -21,9 +21,10 @@ Verwacht:
 Daarna:
 
 1. Maak een OpenTofu/API gebruiker en token aan.
-2. Controleer API-toegang vanaf je werkstation.
-3. Import bestaande resources die OpenTofu moet overnemen, zoals de enterprise
-   APT repo entries.
+2. Zet de token in `/Users/matthias/Dev/homelab/.env`.
+3. Controleer API-toegang vanaf je werkstation met `make plan`.
+4. Import bestaande resources die OpenTofu moet overnemen, zoals de enterprise
+   APT repo entries, voordat je ze declaratief beheert.
 
 ## q-device op `tumuric`
 
@@ -40,6 +41,5 @@ Daarna:
 ## OpenTofu bootstrap
 
 1. Vul `environments/homelab/terraform.tfvars` lokaal in.
-2. Exporteer `PROXMOX_VE_ENDPOINT`, `PROXMOX_VE_API_TOKEN` en eventueel
-   `PROXMOX_VE_INSECURE`.
-3. Run `tofu init`, `tofu validate` en daarna pas `tofu plan`.
+2. Vul `.env` lokaal in op basis van `.env.example`.
+3. Run `make env-check`, `make init`, `make plan` en daarna pas `make apply`.
