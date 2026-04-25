@@ -1,0 +1,23 @@
+.DS_Store
+
+# OpenTofu / Terraform
+.terraform/
+*.tfstate
+*.tfstate.*
+crash.log
+crash.*.log
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+
+# Local secrets and plans
+*.tfvars
+*.tfvars.json
+*.tfplan
+*.plan
+
+# Local tooling
+.env
+.env.*
+!.env.example

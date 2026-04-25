@@ -1,0 +1,28 @@
+# Copy this file to terraform.tfvars and adjust locally.
+# Do not commit terraform.tfvars.
+
+cluster_name = "homelab"
+
+proxmox_endpoint     = "https://10.0.1.12:8006/"
+proxmox_insecure     = true
+proxmox_ssh_enabled  = false
+proxmox_ssh_agent    = true
+proxmox_ssh_username = null
+
+manage_apt_repositories = true
+
+nfs_storages = {
+  nas_media = {
+    export        = "/volume1/media"
+    content_types = ["images", "iso", "vztmpl", "backup", "snippets"]
+    nodes         = ["pepper", "salt"]
+  }
+}
+
+pbs = {
+  endpoint  = "10.0.1.14"
+  datastore = ""
+}
+
+workload_ip_start = "10.0.1.20"
+workload_id_start = 120
