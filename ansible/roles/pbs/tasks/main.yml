@@ -1,6 +1,386 @@
 ---
-- name: Document PBS automation implementation status
-  ansible.builtin.debug:
-    msg:
-      - "PBS role scaffold is present."
-      - "Next step: implement install, mount, datastore, jobs and ACL tasks idempotently."
+- name: Assert supported CPU architecture
+  ansible.builtin.assert:
+    that:
+      - ansible_facts["architecture"] in ["x86_64", "amd64"]
+    fail_msg: "Proxmox Backup Server packages require x86_64/amd64. This host reports {{ ansible_facts['architecture'] }}."
+
+- name: Disable PBS enterprise repository files
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: absent
+  loop:
+    - /etc/apt/sources.list.d/pbs-enterprise.sources
+    - /etc/apt/sources.list.d/pbs-enterprise.list
+
+- name: Install base APT prerequisites
+  ansible.builtin.apt:
+    name:
+      - ca-certificates
+      - gnupg
+    state: present
+    update_cache: true
+  environment:
+    DEBIAN_FRONTEND: noninteractive
+
+- name: Install Proxmox archive keyring
+  ansible.builtin.get_url:
+    url: "{{ pbs_repository_key_url }}"
+    dest: "{{ pbs_repository_key_path }}"
+    mode: "0644"
+
+- name: Configure Proxmox Backup no-subscription repository
+  ansible.builtin.template:
+    src: proxmox.sources.j2
+    dest: "{{ pbs_repository_file }}"
+    owner: root
+    group: root
+    mode: "0644"
+  register: pbs_repository_config
+
+- name: Install Proxmox Backup Server and NFS packages
+  ansible.builtin.apt:
+    name: "{{ pbs_packages }}"
+    state: present
+    update_cache: "{{ pbs_repository_config.changed }}"
+  environment:
+    DEBIAN_FRONTEND: noninteractive
+
+- name: Ensure PBS proxy service is enabled and running
+  ansible.builtin.service:
+    name: proxmox-backup-proxy
+    enabled: true
+    state: started
+
+- name: Ensure PBS API port is reachable locally
+  ansible.builtin.wait_for:
+    host: 127.0.0.1
+    port: 8007
+    timeout: 60
+
+- name: Ensure PBS mountpoint exists
+  ansible.builtin.file:
+    path: "{{ pbs_mount_path }}"
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+
+- name: Mount PBS NAS export
+  ansible.posix.mount:
+    path: "{{ pbs_mount_path }}"
+    src: "{{ pbs_nas_server }}:{{ pbs_nas_export }}"
+    fstype: "{{ pbs_nfs_fstype }}"
+    opts: "{{ pbs_nfs_options }}"
+    state: mounted
+
+- name: Validate PBS NAS export is writable
+  ansible.builtin.copy:
+    content: "pbs write validation\n"
+    dest: "{{ pbs_mount_path }}/.ansible-pbs-write-test"
+    owner: root
+    group: root
+    mode: "0644"
+
+- name: Remove PBS NAS write validation file
+  ansible.builtin.file:
+    path: "{{ pbs_mount_path }}/.ansible-pbs-write-test"
+    state: absent
+  changed_when: false
+
+- name: Ensure PBS datastore directory exists
+  ansible.builtin.file:
+    path: "{{ pbs_datastore_path }}"
+    state: directory
+    owner: backup
+    group: backup
+    mode: "0750"
+
+- name: Check PBS datastore
+  ansible.builtin.command:
+    argv:
+      - proxmox-backup-manager
+      - datastore
+      - show
+      - "{{ pbs_datastore_name }}"
+      - --output-format
+      - json
+  register: pbs_datastore_show
+  changed_when: false
+  failed_when: false
+
+- name: Create PBS datastore
+  ansible.builtin.command:
+    argv:
+      - proxmox-backup-manager
+      - datastore
+      - create
+      - "{{ pbs_datastore_name }}"
+      - "{{ pbs_datastore_path }}"
+      - --comment
+      - Main homelab datastore on NAS
+      - --gc-schedule
+      - "{{ pbs_gc_schedule }}"
+      - --prune-schedule
+      - "{{ pbs_prune_schedule }}"
+      - --keep-daily
+      - "{{ pbs_keep_daily | string }}"
+      - --keep-weekly
+      - "{{ pbs_keep_weekly | string }}"
+      - --keep-monthly
+      - "{{ pbs_keep_monthly | string }}"
+      - --keep-yearly
+      - "{{ pbs_keep_yearly | string }}"
+  when: pbs_datastore_show.rc != 0
+
+- name: Update PBS datastore retention and schedules
+  ansible.builtin.command:
+    argv:
+      - proxmox-backup-manager
+      - datastore
+      - update
+      - "{{ pbs_datastore_name }}"
+      - --gc-schedule
+      - "{{ pbs_gc_schedule }}"
+      - --prune-schedule
+      - "{{ pbs_prune_schedule }}"
+      - --keep-daily
+      - "{{ pbs_keep_daily | string }}"
+      - --keep-weekly
+      - "{{ pbs_keep_weekly | string }}"
+      - --keep-monthly
+      - "{{ pbs_keep_monthly | string }}"
+      - --keep-yearly
+      - "{{ pbs_keep_yearly | string }}"
+  changed_when: false
+
+- name: Check incremental verify job
+  ansible.builtin.command:
+    argv:
+      - proxmox-backup-manager
+      - verify-job
+      - show
+      - "{{ pbs_verify_new_job }}"
+      - --output-format
+      - json
+  register: pbs_verify_new_show
+  changed_when: false
+  failed_when: false
+
+- name: Create incremental verify job
+  ansible.builtin.command:
+    argv:
+      - proxmox-backup-manager
+      - verify-job
+      - create
+      - "{{ pbs_verify_new_job }}"
+      - --store
+      - "{{ pbs_datastore_name }}"
+      - --schedule
+      - "{{ pbs_verify_new_schedule }}"
+      - --ignore-verified
+      - "true"
+  when: pbs_verify_new_show.rc != 0
+
+- name: Update incremental verify job
+  ansible.builtin.command:
+    argv:
+      - proxmox-backup-manager
+      - verify-job
+      - update
+      - "{{ pbs_verify_new_job }}"
+      - --store
+      - "{{ pbs_datastore_name }}"
+      - --schedule
+      - "{{ pbs_verify_new_schedule }}"
+      - --ignore-verified
+      - "true"
+  changed_when: false
+
+- name: Check full verify job
+  ansible.builtin.command:
+    argv:
+      - proxmox-backup-manager
+      - verify-job
+      - show
+      - "{{ pbs_verify_full_job }}"
+      - --output-format
+      - json
+  register: pbs_verify_full_show
+  changed_when: false
+  failed_when: false
+
+- name: Create full verify job
+  ansible.builtin.command:
+    argv:
+      - proxmox-backup-manager
+      - verify-job
+      - create
+      - "{{ pbs_verify_full_job }}"
+      - --store
+      - "{{ pbs_datastore_name }}"
+      - --schedule
+      - "{{ pbs_verify_full_schedule }}"
+      - --ignore-verified
+      - "false"
+  when: pbs_verify_full_show.rc != 0
+
+- name: Update full verify job
+  ansible.builtin.command:
+    argv:
+      - proxmox-backup-manager
+      - verify-job
+      - update
+      - "{{ pbs_verify_full_job }}"
+      - --store
+      - "{{ pbs_datastore_name }}"
+      - --schedule
+      - "{{ pbs_verify_full_schedule }}"
+      - --ignore-verified
+      - "false"
+  changed_when: false
+
+- name: List PBS users
+  ansible.builtin.command:
+    argv:
+      - proxmox-backup-manager
+      - user
+      - list
+      - --output-format
+      - json
+  register: pbs_user_list
+  changed_when: false
+
+- name: Create PBS user for Proxmox VE backups
+  ansible.builtin.command:
+    argv:
+      - proxmox-backup-manager
+      - user
+      - create
+      - "{{ pbs_pve_user }}"
+      - --comment
+      - Proxmox VE backup user
+  when: pbs_pve_user not in (pbs_user_list.stdout | from_json | map(attribute='userid') | list)
+
+- name: List PBS API tokens for Proxmox VE user
+  ansible.builtin.command:
+    argv:
+      - proxmox-backup-manager
+      - user
+      - list-tokens
+      - "{{ pbs_pve_user }}"
+      - --output-format
+      - json
+  register: pbs_token_list
+  changed_when: false
+
+- name: Detect PBS API token state
+  ansible.builtin.set_fact:
+    pbs_pve_token_exists: "{{ pbs_pve_auth_id in (pbs_token_list.stdout | from_json | map(attribute='tokenid') | list) }}"
+
+- name: Check local PBS token secret file
+  ansible.builtin.stat:
+    path: "{{ pbs_token_secret_local_path }}"
+  delegate_to: localhost
+  become: false
+  register: pbs_local_token_file
+
+- name: Generate PBS API token for Proxmox VE
+  ansible.builtin.command:
+    argv:
+      - proxmox-backup-manager
+      - user
+      - generate-token
+      - "{{ pbs_pve_user }}"
+      - "{{ pbs_pve_token_name }}"
+      - --comment
+      - "{{ pbs_pve_token_comment }}"
+  register: pbs_generated_token
+  no_log: true
+  when: not pbs_pve_token_exists
+
+- name: Ensure local secret directory exists
+  ansible.builtin.file:
+    path: "{{ pbs_token_secret_local_path | dirname }}"
+    state: directory
+    mode: "0700"
+  delegate_to: localhost
+  become: false
+  when: not pbs_pve_token_exists
+
+- name: Store generated PBS token secret locally
+  ansible.builtin.copy:
+    dest: "{{ pbs_token_secret_local_path }}"
+    mode: "0600"
+    content: |
+      {
+        "tokenid": "{{ pbs_pve_auth_id }}",
+        "value": "{{ pbs_generated_token.stdout | regex_search('\"value\"\\s*:\\s*\"([^\"]+)\"', '\\1') | first }}",
+        "server": "10.0.1.20",
+        "datastore": "{{ pbs_datastore_name }}"
+      }
+  delegate_to: localhost
+  become: false
+  no_log: true
+  when: not pbs_pve_token_exists
+
+- name: Fail if existing token secret is not available locally
+  ansible.builtin.fail:
+    msg: >-
+      PBS token {{ pbs_pve_auth_id }} already exists, but {{ pbs_token_secret_local_path }}
+      is missing. PBS cannot show token secrets again. Restore the local secret
+      file or delete the token in PBS so this role can regenerate it.
+  when:
+    - pbs_pve_token_exists
+    - not pbs_local_token_file.stat.exists
+
+- name: List PBS ACLs
+  ansible.builtin.command:
+    argv:
+      - proxmox-backup-manager
+      - acl
+      - list
+      - --output-format
+      - json
+  register: pbs_acl_list
+  changed_when: false
+
+- name: Grant DatastoreBackup to PBS API token
+  ansible.builtin.command:
+    argv:
+      - proxmox-backup-manager
+      - acl
+      - update
+      - "/datastore/{{ pbs_datastore_name }}"
+      - DatastoreBackup
+      - --auth-id
+      - "{{ pbs_pve_auth_id }}"
+  when: >
+    not (
+      pbs_acl_list.stdout | from_json
+      | selectattr('ugid', 'equalto', pbs_pve_auth_id)
+      | selectattr('path', 'equalto', '/datastore/' + pbs_datastore_name)
+      | selectattr('roleid', 'equalto', 'DatastoreBackup')
+      | list
+    )
+
+- name: Validate datastore configuration
+  ansible.builtin.command:
+    argv:
+      - proxmox-backup-manager
+      - datastore
+      - show
+      - "{{ pbs_datastore_name }}"
+      - --output-format
+      - json
+  changed_when: false
+
+- name: Validate garbage collection status is readable
+  ansible.builtin.command:
+    argv:
+      - proxmox-backup-manager
+      - garbage-collection
+      - status
+      - "{{ pbs_datastore_name }}"
+  changed_when: false
+  failed_when: false

@@ -120,11 +120,11 @@ Gewenste state:
 | --- | --- |
 | Directory | `/mnt/pbs/pbs-main`, owner `backup:backup`, mode `0750` |
 | Datastore | `pbs-main` exists at `/mnt/pbs/pbs-main` |
-| Prune schedule | `daily 03:00` |
+| Prune schedule | `03:00` |
 | Retention | 14 daily, 8 weekly, 12 monthly, 2 yearly |
 | GC schedule | `sun 04:00` |
-| Verify new chunks | job `pbs-main-new`, `daily 05:00`, ignore already verified |
-| Verify full | job `pbs-main-full`, monthly, verify all |
+| Verify new chunks | job `pbs-main-new`, `05:00`, ignore already verified |
+| Verify full | job `pbs-main-full`, `*-*-01 05:30`, verify all |
 
 Implementatie hoort in Ansible. Waar PBS geen declaratieve module heeft, gebruikt
 de role CLI-commando's met `changed_when` en voorafgaande read/check taken zodat

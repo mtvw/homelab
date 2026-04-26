@@ -4,9 +4,10 @@ pbs_datastore_path: /mnt/pbs/pbs-main
 pbs_mount_path: /mnt/pbs
 pbs_nas_server: 10.0.1.11
 pbs_nas_export: /volume1/pbs
+pbs_nfs_fstype: nfs4
 pbs_nfs_options: rw,hard,noatime,nconnect=4,_netdev,x-systemd.automount,x-systemd.requires=network-online.target
 
-pbs_prune_schedule: "daily 03:00"
+pbs_prune_schedule: "03:00"
 pbs_keep_daily: 14
 pbs_keep_weekly: 8
 pbs_keep_monthly: 12
@@ -14,8 +15,25 @@ pbs_keep_yearly: 2
 pbs_gc_schedule: "sun 04:00"
 
 pbs_verify_new_job: pbs-main-new
-pbs_verify_new_schedule: "daily 05:00"
+pbs_verify_new_schedule: "05:00"
 pbs_verify_full_job: pbs-main-full
-pbs_verify_full_schedule: monthly
+pbs_verify_full_schedule: "*-*-01 05:30"
 
 pbs_pve_auth_id: pve-backup@pbs!pve
+pbs_pve_user: pve-backup@pbs
+pbs_pve_token_name: pve
+pbs_pve_token_comment: Token for Proxmox VE cluster backups
+pbs_token_secret_local_path: "{{ playbook_dir }}/../../.secrets/pbs_pve_token.json"
+
+pbs_repository_key_url: https://enterprise.proxmox.com/debian/proxmox-archive-keyring-trixie.gpg
+pbs_repository_key_path: /usr/share/keyrings/proxmox-archive-keyring.gpg
+pbs_repository_file: /etc/apt/sources.list.d/proxmox.sources
+pbs_repository_suite: trixie
+pbs_repository_component: pbs-no-subscription
+pbs_repository_uri: http://download.proxmox.com/debian/pbs
+
+pbs_packages:
+  - ca-certificates
+  - gnupg
+  - nfs-common
+  - proxmox-backup-server

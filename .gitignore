@@ -3,6 +3,7 @@
 # OpenTofu / Terraform
 .terraform/
 .ansible/
+.secrets/
 *.tfstate
 *.tfstate.*
 crash.log
