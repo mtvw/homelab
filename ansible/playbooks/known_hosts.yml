@@ -1,0 +1,29 @@
+---
+- name: Register SSH host keys for inventory hosts
+  hosts: localhost
+  gather_facts: false
+  vars:
+    known_host_groups:
+      - pbs
+      - docker_hosts
+    known_hosts_path: "{{ lookup('env', 'HOME') }}/.ssh/known_hosts"
+
+  tasks:
+    - name: Build known_hosts target list from inventory groups
+      ansible.builtin.set_fact:
+        known_host_targets: "{{ (known_host_targets | default([])) + (groups[item] | default([])) }}"
+      loop: "{{ known_host_groups }}"
+
+    - name: Ensure SSH config directory exists
+      ansible.builtin.file:
+        path: "{{ lookup('env', 'HOME') }}/.ssh"
+        state: directory
+        mode: "0700"
+
+    - name: Add inventory host keys to local known_hosts
+      ansible.builtin.known_hosts:
+        name: "{{ hostvars[item].ansible_host | default(item) }}"
+        key: "{{ lookup('pipe', 'ssh-keyscan -T 5 ' ~ (hostvars[item].ansible_host | default(item))) }}"
+        path: "{{ known_hosts_path }}"
+        hash_host: true
+      loop: "{{ known_host_targets | default([]) | unique }}"

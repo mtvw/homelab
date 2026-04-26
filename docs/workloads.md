@@ -30,8 +30,14 @@ Gebruik deze indeling:
 3. Koppel cloud-init voor hostname, netwerk en SSH.
 4. Run `make plan` en `make apply`.
 5. Wacht tot cloud-init klaar is en SSH werkt.
-6. Run het bijbehorende Ansible playbook.
-7. Run service-validatie.
+6. Registreer of vernieuw de SSH host key met `make ansible-known-hosts`.
+7. Run het bijbehorende Ansible playbook.
+8. Run service-validatie.
+
+SSH host key verificatie blijft aan. `make ansible-known-hosts` vult
+`~/.ssh/known_hosts` vanuit de inventory, maar de eerste trust-beslissing blijft
+bewust: controleer bij nieuwe of vervangen VM's dat het IP echt bij de bedoelde
+host hoort.
 
 ## PBS
 

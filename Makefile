@@ -1,4 +1,4 @@
-.PHONY: help env-check fmt fmt-check init validate plan apply ansible-syntax ansible-pbs ansible-docker check
+.PHONY: help env-check fmt fmt-check init validate plan apply ansible-syntax ansible-known-hosts ansible-pbs ansible-docker check
 
 TF_ROOT ?= environments/homelab
 ENV_FILE ?= .env
@@ -22,6 +22,7 @@ help:
 	@echo "  make apply      Apply infra changes"
 	@echo ""
 	@echo "Ansible:"
+	@echo "  make ansible-known-hosts  Add inventory host SSH keys to known_hosts"
 	@echo "  make ansible-pbs  Run PBS configuration playbook"
 	@echo "  make ansible-docker  Install Docker on docker hosts"
 	@echo ""
@@ -58,10 +59,14 @@ apply: env-check
 ansible-pbs:
 	ansible-playbook -i ansible/inventory.example.yml ansible/playbooks/pbs.yml
 
+ansible-known-hosts:
+	ansible-playbook -i ansible/inventory.example.yml ansible/playbooks/known_hosts.yml
+
 ansible-docker:
 	ansible-playbook -i ansible/inventory.example.yml ansible/playbooks/docker.yml
 
 ansible-syntax:
+	ansible-playbook --syntax-check ansible/playbooks/known_hosts.yml
 	ansible-playbook --syntax-check ansible/playbooks/pbs.yml
 	ansible-playbook --syntax-check ansible/playbooks/docker.yml
 

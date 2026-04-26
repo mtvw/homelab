@@ -131,6 +131,7 @@ toegang heeft klaargezet.
 Voor de Docker host:
 
 ```sh
+make ansible-known-hosts
 make ansible-docker
 ```
 
