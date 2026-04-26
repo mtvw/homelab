@@ -1,0 +1,91 @@
+---
+- name: Configure Jellyfin LXC host mount
+  hosts: jellyfin_lxc_hosts
+  become: true
+  vars:
+    jellyfin_lxc_id: 122
+    jellyfin_lxc_address: 10.0.1.22
+    jellyfin_host_media_path: /mnt/nas/media
+    jellyfin_container_media_path: /media
+    jellyfin_nas_server: 10.0.1.11
+    jellyfin_nas_export: /volume1/media
+    jellyfin_nfs_fstype: nfs
+    jellyfin_nfs_options: ro,hard,noatime,vers=3,nolock,_netdev,x-systemd.automount,x-systemd.requires=network-online.target
+
+  tasks:
+    - name: Install NFS client packages on LXC host
+      ansible.builtin.apt:
+        name: nfs-common
+        state: present
+        update_cache: true
+      environment:
+        DEBIAN_FRONTEND: noninteractive
+
+    - name: Ensure Jellyfin host media parent exists
+      ansible.builtin.file:
+        path: "{{ jellyfin_host_media_path | dirname }}"
+        state: directory
+        owner: root
+        group: root
+        mode: "0755"
+
+    - name: Create Jellyfin host media mountpoint when absent
+      ansible.builtin.command:
+        argv:
+          - mkdir
+          - -p
+          - "{{ jellyfin_host_media_path }}"
+        creates: "{{ jellyfin_host_media_path }}"
+
+    - name: Mount Jellyfin NAS media export on LXC host
+      ansible.posix.mount:
+        path: "{{ jellyfin_host_media_path }}"
+        src: "{{ jellyfin_nas_server }}:{{ jellyfin_nas_export }}"
+        fstype: "{{ jellyfin_nfs_fstype }}"
+        opts: "{{ jellyfin_nfs_options }}"
+        state: mounted
+
+    - name: Read Jellyfin container configuration
+      ansible.builtin.command:
+        argv:
+          - pct
+          - config
+          - "{{ jellyfin_lxc_id | string }}"
+      register: jellyfin_lxc_config
+      changed_when: false
+
+    - name: Bind host media mount into Jellyfin container
+      ansible.builtin.command:
+        argv:
+          - pct
+          - set
+          - "{{ jellyfin_lxc_id | string }}"
+          - -mp0
+          - "{{ jellyfin_host_media_path }},mp={{ jellyfin_container_media_path }},ro=1"
+      register: jellyfin_lxc_bind_mount
+      when: "'mp0: ' ~ jellyfin_host_media_path ~ ',mp=' ~ jellyfin_container_media_path not in jellyfin_lxc_config.stdout"
+
+    - name: Restart Jellyfin container after bind mount change
+      ansible.builtin.command:
+        argv:
+          - pct
+          - reboot
+          - "{{ jellyfin_lxc_id | string }}"
+      when: jellyfin_lxc_bind_mount is changed
+
+    - name: Wait for Jellyfin container SSH after restart
+      ansible.builtin.wait_for:
+        host: "{{ jellyfin_lxc_address }}"
+        port: 22
+        timeout: 120
+      delegate_to: localhost
+      become: false
+      when: jellyfin_lxc_bind_mount is changed
+
+- name: Configure Jellyfin hosts
+  hosts: jellyfin_hosts
+  become: true
+  vars:
+    jellyfin_media_mount_enabled: false
+  roles:
+    - jellyfin

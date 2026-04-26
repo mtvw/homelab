@@ -4,8 +4,10 @@
   gather_facts: false
   vars:
     known_host_groups:
+      - jellyfin_lxc_hosts
       - pbs
       - docker_hosts
+      - jellyfin_hosts
     known_hosts_path: "{{ lookup('env', 'HOME') }}/.ssh/known_hosts"
 
   tasks:

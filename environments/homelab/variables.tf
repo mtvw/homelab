@@ -59,13 +59,13 @@ variable "nfs_storages" {
 variable "workload_ip_start" {
   description = "Next available static IP for future LXC and VM workloads."
   type        = string
-  default     = "10.0.1.22"
+  default     = "10.0.1.23"
 }
 
 variable "workload_id_start" {
   description = "Next available Proxmox VMID/CTID for future managed workloads."
   type        = number
-  default     = 122
+  default     = 123
 }
 
 variable "pbs" {
@@ -132,6 +132,32 @@ variable "docker_vm" {
     ssh_username            = optional(string, "debian")
     ssh_public_key_path     = optional(string, "~/.ssh/id_ed25519.pub")
     tags                    = optional(list(string), ["terraform", "workload", "docker"])
+  })
+  default = {}
+}
+
+variable "jellyfin_lxc" {
+  description = "OpenTofu-managed Debian LXC configuration for Jellyfin."
+  type = object({
+    enabled                   = optional(bool, true)
+    name                      = optional(string, "jellyfin01")
+    vm_id                     = optional(number, 122)
+    node_name                 = optional(string, "pepper")
+    ipv4_address              = optional(string, "10.0.1.22/24")
+    ipv4_gateway              = optional(string, "10.0.1.1")
+    dns_servers               = optional(list(string), ["10.0.1.1"])
+    bridge                    = optional(string, "vmbr0")
+    template_url              = optional(string, "http://download.proxmox.com/images/system/debian-13-standard_13.1-2_amd64.tar.zst")
+    template_file_name        = optional(string, "debian-13-standard_13.1-2_amd64.tar.zst")
+    template_datastore_id     = optional(string, "local")
+    template_download_timeout = optional(number, 1800)
+    disk_datastore_id         = optional(string, "local-lvm")
+    disk_size                 = optional(number, 32)
+    cores                     = optional(number, 2)
+    memory_mb                 = optional(number, 4096)
+    swap_mb                   = optional(number, 512)
+    ssh_public_key_path       = optional(string, "~/.ssh/id_ed25519.pub")
+    tags                      = optional(list(string), ["terraform", "workload", "jellyfin"])
   })
   default = {}
 }

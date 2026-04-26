@@ -1,0 +1,131 @@
+---
+- name: Assert supported CPU architecture
+  ansible.builtin.assert:
+    that:
+      - ansible_facts["architecture"] in ["x86_64", "amd64", "aarch64", "arm64"]
+    fail_msg: "Jellyfin Debian packages require amd64 or arm64. This host reports {{ ansible_facts['architecture'] }}."
+
+- name: Install base APT prerequisites
+  ansible.builtin.apt:
+    name:
+      - ca-certificates
+      - curl
+      - gnupg
+    state: present
+    update_cache: true
+  environment:
+    DEBIAN_FRONTEND: noninteractive
+
+- name: Ensure APT keyring directory exists
+  ansible.builtin.file:
+    path: /etc/apt/keyrings
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+
+- name: Download Jellyfin repository signing key
+  ansible.builtin.get_url:
+    url: "{{ jellyfin_repository_key_url }}"
+    dest: "{{ jellyfin_repository_key_source_path }}"
+    owner: root
+    group: root
+    mode: "0644"
+  register: jellyfin_repository_key
+
+- name: Check Jellyfin repository keyring
+  ansible.builtin.stat:
+    path: "{{ jellyfin_repository_keyring_path }}"
+  register: jellyfin_repository_keyring
+
+- name: Install Jellyfin repository signing keyring
+  ansible.builtin.command:
+    argv:
+      - gpg
+      - --dearmor
+      - --yes
+      - --output
+      - "{{ jellyfin_repository_keyring_path }}"
+      - "{{ jellyfin_repository_key_source_path }}"
+  when: jellyfin_repository_key.changed or not jellyfin_repository_keyring.stat.exists
+
+- name: Ensure Jellyfin repository keyring permissions
+  ansible.builtin.file:
+    path: "{{ jellyfin_repository_keyring_path }}"
+    owner: root
+    group: root
+    mode: "0644"
+
+- name: Configure Jellyfin APT repository
+  ansible.builtin.template:
+    src: jellyfin.sources.j2
+    dest: "{{ jellyfin_repository_file }}"
+    owner: root
+    group: root
+    mode: "0644"
+  register: jellyfin_repository_config
+
+- name: Install Jellyfin packages
+  ansible.builtin.apt:
+    name: "{{ jellyfin_packages }}"
+    state: present
+    update_cache: "{{ jellyfin_repository_key.changed or jellyfin_repository_config.changed }}"
+  environment:
+    DEBIAN_FRONTEND: noninteractive
+
+- name: Ensure Jellyfin directories exist
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    owner: jellyfin
+    group: jellyfin
+    mode: "0755"
+  loop: "{{ jellyfin_extra_directories }}"
+
+- name: Ensure Jellyfin media mountpoint exists
+  ansible.builtin.file:
+    path: "{{ jellyfin_media_path }}"
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+  when: jellyfin_media_mount_enabled
+
+- name: Show Jellyfin NAS mount hint
+  ansible.builtin.debug:
+    msg: "Mounting {{ jellyfin_nas_server }}:{{ jellyfin_nas_export }} on {{ jellyfin_media_path }}. For Synology exports to unprivileged LXC clients, allow {{ ansible_host | default(ansible_default_ipv4.address) }} and enable non-privileged ports for the NFS permission."
+  when: jellyfin_media_mount_enabled
+
+- name: Mount Jellyfin NAS media export
+  ansible.posix.mount:
+    path: "{{ jellyfin_media_path }}"
+    src: "{{ jellyfin_nas_server }}:{{ jellyfin_nas_export }}"
+    fstype: "{{ jellyfin_nfs_fstype }}"
+    opts: "{{ jellyfin_nfs_options }}"
+    state: mounted
+  when: jellyfin_media_mount_enabled
+
+- name: Validate Jellyfin media path is readable by service user
+  ansible.builtin.command:
+    argv:
+      - runuser
+      - -u
+      - jellyfin
+      - --
+      - test
+      - -r
+      - "{{ jellyfin_media_path }}"
+  changed_when: false
+  when: jellyfin_media_validate_readable
+
+- name: Ensure Jellyfin service is enabled and running
+  ansible.builtin.service:
+    name: "{{ jellyfin_service_name }}"
+    enabled: true
+    state: started
+
+- name: Ensure Jellyfin HTTP port is reachable locally
+  ansible.builtin.wait_for:
+    host: "{{ jellyfin_http_host }}"
+    port: "{{ jellyfin_http_port }}"
+    timeout: 60

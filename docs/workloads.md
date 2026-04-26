@@ -59,3 +59,14 @@ Ansible is configuratiebeheer, geen VM-provisioninglaag.
 1. OpenTofu maakt VM `docker01` op `10.0.1.21`.
 2. cloud-init zet `docker01` klaar voor Ansible.
 3. `make ansible-docker` installeert Docker en valideert de daemon.
+
+## Jellyfin
+
+`jellyfin01` is een Debian LXC voor Jellyfin.
+
+1. OpenTofu downloadt de Debian LXC-template naar Proxmox storage.
+2. OpenTofu maakt LXC `jellyfin01` op `10.0.1.22`.
+3. De container krijgt een root SSH key via LXC-initialisatie.
+4. `make ansible-jellyfin` installeert Jellyfin, mount de NAS media export op
+   `/media` en valideert poort `8096`.
+5. De eerste Jellyfin setup gebeurt in de web UI op `http://10.0.1.22:8096`.

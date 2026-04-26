@@ -30,6 +30,12 @@ locals {
     role    = "docker"
   }
 
+  jellyfin = {
+    name    = var.jellyfin_lxc.name
+    address = split("/", var.jellyfin_lxc.ipv4_address)[0]
+    role    = "media"
+  }
+
   nas = {
     address = "10.0.1.11"
     role    = "nfs"
@@ -38,6 +44,6 @@ locals {
   workload_network = {
     cidr       = "10.0.1.0/24"
     gateway    = "10.0.1.1"
-    first_host = "10.0.1.22"
+    first_host = "10.0.1.23"
   }
 }

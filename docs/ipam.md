@@ -11,4 +11,5 @@ Workloads krijgen statische IP's in het management/guest subnet.
 | `10.0.1.14` | `tumuric` |
 | `10.0.1.20` | `pbs01` |
 | `10.0.1.21` | `docker01` |
-| `10.0.1.22+` | Volgende vrije LXC/VM workloads |
+| `10.0.1.22` | `jellyfin01` |
+| `10.0.1.23+` | Volgende vrije LXC/VM workloads |

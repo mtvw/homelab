@@ -14,6 +14,7 @@ verwacht, moet die host eerst als OpenTofu-resource bestaan. Zie
 | `inventory.example.yml` | Voorbeeldinventory zonder secrets |
 | `playbooks/pbs.yml` | PBS configuratie voor `pbs01` |
 | `playbooks/docker.yml` | Docker configuratie voor Docker hosts |
+| `playbooks/jellyfin.yml` | Jellyfin installatie en configuratie voor `jellyfin01` |
 | `roles/` | Herbruikbare rollen per component |
 
 Kopieer `inventory.example.yml` lokaal naar een niet-gecommit inventorybestand
@@ -25,6 +26,7 @@ of genereer later inventory vanuit OpenTofu output.
 ansible-playbook -i ansible/inventory.example.yml ansible/playbooks/known_hosts.yml
 ansible-playbook -i ansible/inventory.example.yml ansible/playbooks/pbs.yml
 ansible-playbook -i ansible/inventory.example.yml ansible/playbooks/docker.yml
+ansible-playbook -i ansible/inventory.example.yml ansible/playbooks/jellyfin.yml
 ```
 
 De repo bevat een `ansible.cfg` die tijdelijke bestanden onder `.ansible/tmp`
@@ -55,3 +57,17 @@ key, verwijder dan eerst de oude entry en scan opnieuw:
 ssh-keygen -R 10.0.1.21
 make ansible-known-hosts
 ```
+
+## Jellyfin
+
+`make ansible-jellyfin` mount de NAS media export
+`10.0.1.11:/volume1/media` read-only op de Proxmox host `pepper`, bind mount
+die naar `/media` in LXC `jellyfin01`, installeert Jellyfin vanuit de officiële
+Jellyfin APT repository en start de service.
+
+Voor Synology moet de NFS permission op de share minstens de Proxmox host
+`pepper` (`10.0.1.12`) toelaten. `jellyfin01` is een unprivileged LXC en krijgt
+de media via een host bind mount, omdat NFS mounts binnen unprivileged LXC's
+door de kernel geweigerd kunnen worden.
+
+De eerste webconfiguratie gebeurt daarna via `http://10.0.1.22:8096`.

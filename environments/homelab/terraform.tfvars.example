@@ -72,5 +72,27 @@ docker_vm = {
   tags                    = ["terraform", "workload", "docker"]
 }
 
-workload_ip_start = "10.0.1.22"
-workload_id_start = 122
+jellyfin_lxc = {
+  enabled                   = true
+  name                      = "jellyfin01"
+  vm_id                     = 122
+  node_name                 = "pepper"
+  ipv4_address              = "10.0.1.22/24"
+  ipv4_gateway              = "10.0.1.1"
+  dns_servers               = ["10.0.1.1"]
+  bridge                    = "vmbr0"
+  template_url              = "http://download.proxmox.com/images/system/debian-13-standard_13.1-2_amd64.tar.zst"
+  template_file_name        = "debian-13-standard_13.1-2_amd64.tar.zst"
+  template_datastore_id     = "local"
+  template_download_timeout = 1800
+  disk_datastore_id         = "local-lvm"
+  disk_size                 = 32
+  cores                     = 2
+  memory_mb                 = 4096
+  swap_mb                   = 512
+  ssh_public_key_path       = "~/.ssh/id_ed25519.pub"
+  tags                      = ["terraform", "workload", "jellyfin"]
+}
+
+workload_ip_start = "10.0.1.23"
+workload_id_start = 123

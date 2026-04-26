@@ -19,6 +19,20 @@ pvesm nfsscan 10.0.1.11
 Als Proxmox de export als `/volume1/media` ziet, houden we `nas_media`. Als de
 NAS iets anders toont, passen we `nfs_storages` aan.
 
+Voor Jellyfin mount `pepper` de media export op `/mnt/nas/media`, waarna die
+host-directory read-only in `jellyfin01` op `/media` wordt gebindmount. Synology
+NFS permissions moeten daarom `10.0.1.12` toelaten. We mounten niet rechtstreeks
+vanuit de unprivileged LXC, omdat de kernel NFS mounts binnen zo'n container kan
+weigeren met `Operation not permitted`. De Synology export werkt hier via NFSv3
+met een reserved source port; NFSv4 en `noresvport` worden door de NAS geweigerd.
+
+Als `/media` in de container als `nobody:nogroup` met mode `d---------`
+verschijnt, staat de NFS identity mapping op Synology nog niet bruikbaar voor
+Jellyfin. Zet in de Synology NFS permission voor `10.0.1.12` de squash/mapping
+op een gebruiker die de media-share mag lezen, bijvoorbeeld **Map all users to
+admin**, of pas de Unix-permissies op de share aan zodat de gemapte gebruiker
+lees- en execute-rechten heeft.
+
 ## PBS
 
 Aanbevolen: maak een aparte NAS export voor PBS, niet dezelfde media-share.

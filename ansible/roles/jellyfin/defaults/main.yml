@@ -1,0 +1,33 @@
+---
+jellyfin_repository_key_url: https://repo.jellyfin.org/jellyfin_team.gpg.key
+jellyfin_repository_key_source_path: /etc/apt/keyrings/jellyfin_team.gpg.key
+jellyfin_repository_keyring_path: /etc/apt/keyrings/jellyfin.gpg
+jellyfin_repository_file: /etc/apt/sources.list.d/jellyfin.sources
+jellyfin_repository_uri: https://repo.jellyfin.org/debian
+jellyfin_repository_suite: "{{ ansible_facts['distribution_release'] }}"
+jellyfin_repository_components: main
+jellyfin_repository_architecture: "{{ 'amd64' if ansible_facts['architecture'] in ['x86_64', 'amd64'] else 'arm64' }}"
+
+jellyfin_packages:
+  - ca-certificates
+  - curl
+  - gnupg
+  - jellyfin
+  - nfs-common
+
+jellyfin_service_name: jellyfin
+jellyfin_http_host: 127.0.0.1
+jellyfin_http_port: 8096
+
+jellyfin_media_mount_enabled: true
+jellyfin_media_validate_readable: true
+jellyfin_media_path: /media
+jellyfin_nas_server: 10.0.1.11
+jellyfin_nas_export: /volume1/media
+jellyfin_nfs_fstype: nfs4
+jellyfin_nfs_options: ro,hard,noatime,noresvport,_netdev,x-systemd.automount,x-systemd.requires=network-online.target
+
+jellyfin_extra_directories:
+  - /var/cache/jellyfin
+  - /var/lib/jellyfin
+  - /etc/jellyfin

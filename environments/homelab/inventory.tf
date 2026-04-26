@@ -15,6 +15,10 @@ output "inventory" {
       vm_id     = var.docker_vm.vm_id
       node_name = var.docker_vm.node_name
     })
+    jellyfin = merge(local.jellyfin, {
+      vm_id     = var.jellyfin_lxc.vm_id
+      node_name = var.jellyfin_lxc.node_name
+    })
     workload_network = {
       cidr       = local.workload_network.cidr
       gateway    = local.workload_network.gateway

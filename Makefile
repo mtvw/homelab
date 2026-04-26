@@ -1,4 +1,4 @@
-.PHONY: help env-check fmt fmt-check init validate plan apply ansible-syntax ansible-known-hosts ansible-pbs ansible-docker check
+.PHONY: help env-check fmt fmt-check init validate plan apply ansible-syntax ansible-known-hosts ansible-pbs ansible-docker ansible-jellyfin check
 
 TF_ROOT ?= environments/homelab
 ENV_FILE ?= .env
@@ -25,6 +25,7 @@ help:
 	@echo "  make ansible-known-hosts  Add inventory host SSH keys to known_hosts"
 	@echo "  make ansible-pbs  Run PBS configuration playbook"
 	@echo "  make ansible-docker  Install Docker on docker hosts"
+	@echo "  make ansible-jellyfin  Install and configure Jellyfin"
 	@echo ""
 	@echo "Quality:"
 	@echo "  make fmt        Format OpenTofu files"
@@ -65,9 +66,13 @@ ansible-known-hosts:
 ansible-docker:
 	ansible-playbook -i ansible/inventory.example.yml ansible/playbooks/docker.yml
 
+ansible-jellyfin:
+	ansible-playbook -i ansible/inventory.example.yml ansible/playbooks/jellyfin.yml
+
 ansible-syntax:
 	ansible-playbook --syntax-check ansible/playbooks/known_hosts.yml
 	ansible-playbook --syntax-check ansible/playbooks/pbs.yml
 	ansible-playbook --syntax-check ansible/playbooks/docker.yml
+	ansible-playbook --syntax-check ansible/playbooks/jellyfin.yml
 
 check: fmt-check ansible-syntax
