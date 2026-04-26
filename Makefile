@@ -1,4 +1,4 @@
-.PHONY: help env-check fmt fmt-check init validate plan apply ansible-syntax ansible-pbs check
+.PHONY: help env-check fmt fmt-check init validate plan apply ansible-syntax ansible-pbs ansible-docker check
 
 TF_ROOT ?= environments/homelab
 ENV_FILE ?= .env
@@ -23,6 +23,7 @@ help:
 	@echo ""
 	@echo "Ansible:"
 	@echo "  make ansible-pbs  Run PBS configuration playbook"
+	@echo "  make ansible-docker  Install Docker on docker hosts"
 	@echo ""
 	@echo "Quality:"
 	@echo "  make fmt        Format OpenTofu files"
@@ -57,7 +58,11 @@ apply: env-check
 ansible-pbs:
 	ansible-playbook -i ansible/inventory.example.yml ansible/playbooks/pbs.yml
 
+ansible-docker:
+	ansible-playbook -i ansible/inventory.example.yml ansible/playbooks/docker.yml
+
 ansible-syntax:
 	ansible-playbook --syntax-check ansible/playbooks/pbs.yml
+	ansible-playbook --syntax-check ansible/playbooks/docker.yml
 
 check: fmt-check ansible-syntax

@@ -48,5 +48,29 @@ pbs_vm = {
   tags                    = ["terraform", "core", "pbs"]
 }
 
-workload_ip_start = "10.0.1.21"
-workload_id_start = 120
+docker_vm = {
+  enabled                 = true
+  name                    = "docker01"
+  vm_id                   = 121
+  node_name               = "pepper"
+  ipv4_address            = "10.0.1.21/24"
+  ipv4_gateway            = "10.0.1.1"
+  dns_servers             = ["10.0.1.1"]
+  bridge                  = "vmbr0"
+  image_url               = "https://cloud.debian.org/images/cloud/trixie/latest/debian-13-genericcloud-amd64.qcow2"
+  image_file_name         = "docker01-debian-13-genericcloud-amd64.qcow2"
+  image_datastore_id      = "local"
+  image_download_timeout  = 1800
+  disk_datastore_id       = "local-lvm"
+  cloud_init_datastore_id = "local-lvm"
+  disk_size               = 64
+  cores                   = 4
+  memory_mb               = 8192
+  cpu_type                = "x86-64-v2-AES"
+  ssh_username            = "debian"
+  ssh_public_key_path     = "~/.ssh/id_ed25519.pub"
+  tags                    = ["terraform", "workload", "docker"]
+}
+
+workload_ip_start = "10.0.1.22"
+workload_id_start = 122

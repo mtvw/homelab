@@ -57,15 +57,15 @@ variable "nfs_storages" {
 }
 
 variable "workload_ip_start" {
-  description = "First static IP for future LXC and VM workloads."
+  description = "Next available static IP for future LXC and VM workloads."
   type        = string
-  default     = "10.0.1.21"
+  default     = "10.0.1.22"
 }
 
 variable "workload_id_start" {
-  description = "First Proxmox VMID/CTID for future managed workloads."
+  description = "Next available Proxmox VMID/CTID for future managed workloads."
   type        = number
-  default     = 120
+  default     = 122
 }
 
 variable "pbs" {
@@ -104,6 +104,34 @@ variable "pbs_vm" {
     ssh_username            = optional(string, "debian")
     ssh_public_key_path     = optional(string, "~/.ssh/id_ed25519.pub")
     tags                    = optional(list(string), ["terraform", "core", "pbs"])
+  })
+  default = {}
+}
+
+variable "docker_vm" {
+  description = "OpenTofu-managed Debian VM configuration for running Docker containers."
+  type = object({
+    enabled                 = optional(bool, true)
+    name                    = optional(string, "docker01")
+    vm_id                   = optional(number, 121)
+    node_name               = optional(string, "pepper")
+    ipv4_address            = optional(string, "10.0.1.21/24")
+    ipv4_gateway            = optional(string, "10.0.1.1")
+    dns_servers             = optional(list(string), ["10.0.1.1"])
+    bridge                  = optional(string, "vmbr0")
+    image_url               = optional(string, "https://cloud.debian.org/images/cloud/trixie/latest/debian-13-genericcloud-amd64.qcow2")
+    image_file_name         = optional(string, "docker01-debian-13-genericcloud-amd64.qcow2")
+    image_datastore_id      = optional(string, "local")
+    image_download_timeout  = optional(number, 1800)
+    disk_datastore_id       = optional(string, "local-lvm")
+    cloud_init_datastore_id = optional(string, "local-lvm")
+    disk_size               = optional(number, 64)
+    cores                   = optional(number, 4)
+    memory_mb               = optional(number, 8192)
+    cpu_type                = optional(string, "x86-64-v2-AES")
+    ssh_username            = optional(string, "debian")
+    ssh_public_key_path     = optional(string, "~/.ssh/id_ed25519.pub")
+    tags                    = optional(list(string), ["terraform", "workload", "docker"])
   })
   default = {}
 }

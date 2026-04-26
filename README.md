@@ -12,6 +12,7 @@ configuratie in git via OpenTofu, cloud-init, Ansible of idempotente scripts.
 | `salt` | `10.0.1.13` | Proxmox VE node | Proxmox VE 9 |
 | `tumuric` | `10.0.1.14` | q-device | Debian/ARM |
 | `pbs01` | `10.0.1.20` | Proxmox Backup Server VM | Debian/x86_64 |
+| `docker01` | `10.0.1.21` | Docker host VM | Debian/x86_64 |
 | NAS | `10.0.1.11` | NFS storage | Extern |
 
 ## Repo-indeling
@@ -126,6 +127,15 @@ make ansible-pbs
 
 Dit werkt pas nadat OpenTofu de VM `pbs01` heeft aangemaakt en cloud-init SSH
 toegang heeft klaargezet.
+
+Voor de Docker host:
+
+```sh
+make ansible-docker
+```
+
+Ook dit werkt pas nadat OpenTofu de VM `docker01` heeft aangemaakt en cloud-init
+SSH toegang heeft klaargezet.
 
 Het PBS playbook staat in [ansible/playbooks/pbs.yml](ansible/playbooks/pbs.yml)
 en gebruikt de role onder [ansible/roles/pbs](ansible/roles/pbs/README.md).

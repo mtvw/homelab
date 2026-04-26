@@ -43,7 +43,8 @@
 
 ## Workloads
 
-- Future LXC/VM workload IPs start at `10.0.1.21`.
-- Future Proxmox VMID/CTID allocation starts at `120`.
+- Allocated workload VM: `docker01` at `10.0.1.21`, VMID `121`.
+- Next free LXC/VM workload IP starts at `10.0.1.22`.
+- Next free Proxmox VMID/CTID allocation starts at `122`.
 - IP allocations should be tracked centrally in the repo to avoid accidental
   renumbering.

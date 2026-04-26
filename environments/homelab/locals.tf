@@ -24,6 +24,12 @@ locals {
     role    = "pbs"
   }
 
+  docker = {
+    name    = var.docker_vm.name
+    address = split("/", var.docker_vm.ipv4_address)[0]
+    role    = "docker"
+  }
+
   nas = {
     address = "10.0.1.11"
     role    = "nfs"

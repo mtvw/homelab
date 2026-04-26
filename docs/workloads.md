@@ -45,3 +45,11 @@ Voor PBS betekent dit:
 
 Tot stap 1 en 2 bestaan, kan `make ansible-pbs` niet slagen. Dat is verwacht:
 Ansible is configuratiebeheer, geen VM-provisioninglaag.
+
+## Docker host
+
+`docker01` is een Debian workload VM voor Docker containers.
+
+1. OpenTofu maakt VM `docker01` op `10.0.1.21`.
+2. cloud-init zet `docker01` klaar voor Ansible.
+3. `make ansible-docker` installeert Docker en valideert de daemon.

@@ -5,3 +5,8 @@ all:
         pbs01:
           ansible_host: 10.0.1.20
           ansible_user: debian
+    docker_hosts:
+      hosts:
+        docker01:
+          ansible_host: 10.0.1.21
+          ansible_user: debian

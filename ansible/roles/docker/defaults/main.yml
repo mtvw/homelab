@@ -1,0 +1,7 @@
+---
+docker_users:
+  - debian
+
+docker_packages:
+  - ca-certificates
+  - docker.io
