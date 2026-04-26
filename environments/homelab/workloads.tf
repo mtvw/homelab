@@ -4,7 +4,7 @@
 # as `pbs.tf` for `pbs01`.
 #
 # IP policy:
-# - static workload IPs start at 10.0.1.21
+# - next free static workload IP starts at 10.0.1.22
 # - allocations are recorded centrally in the repo
 # - no automatic compaction after deletion unless we intentionally renumber
 #

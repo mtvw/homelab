@@ -16,15 +16,12 @@ Deze vragen zijn nog niet beslist. Beantwoorde keuzes staan in
 - Welke NFS-versie en mount options wil je gebruiken?
 - Moet `/volume1/media` echt Proxmox VM/LXC disks toelaten, of is het enkel voor
   ISO/templates/backups/snippets bedoeld?
-- Maak je een aparte `/volume1/pbs` export voor PBS?
 
 ## PBS
 
 - Is de voorgestelde retentie goed: 14 daily, 8 weekly, 12 monthly, 2 yearly?
 - Wil je PBS initieel alleen als storage in Proxmox koppelen, of ook backup jobs
   declaratief beheren?
-- Welke secret backend gebruiken we voor PBS token secrets: Ansible Vault, SOPS,
-  1Password CLI of iets anders?
 
 ## Workloads
 

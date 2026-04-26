@@ -17,7 +17,7 @@ repo-workflow worden opgezet:
 
 ## PBS host
 
-Doel-VM die door OpenTofu moet worden aangemaakt:
+Doel-VM die door OpenTofu wordt aangemaakt:
 
 | Instelling | Waarde |
 | --- | --- |
@@ -29,8 +29,8 @@ Doel-VM die door OpenTofu moet worden aangemaakt:
 | RAM | 4 GiB |
 | Boot start | Enabled |
 
-Deze VM hoort door OpenTofu te worden aangemaakt. Installeer PBS niet handmatig
-als blijvende werkwijze.
+Deze VM hoort door OpenTofu beheerd te blijven. Installeer PBS niet handmatig als
+blijvende werkwijze.
 
 ## NAS export
 
@@ -66,13 +66,15 @@ Voor Synology komt dit ongeveer overeen met:
 
 ## OpenTofu verantwoordelijkheden
 
-OpenTofu moet uiteindelijk beheren:
+OpenTofu beheert:
 
 - VM `pbs01` op een Proxmox node.
-- VMID/naam/IP volgens `docs/ipam.md`.
+- VMID, naam en IP volgens `docs/ipam.md`.
 - Cloud-init user-data en network config.
 - Boot order, autostart, CPU, memory en OS disk.
-- Eventueel een Proxmox storage resource `pbs_pbs01` nadat PBS klaar is.
+
+OpenTofu koppelt later ook een Proxmox storage resource `pbs_pbs01` nadat PBS
+klaar is en de token/fingerprint beschikbaar zijn.
 
 ## cloud-init verantwoordelijkheden
 
@@ -85,8 +87,8 @@ Cloud-init moet alleen de eerste boot doen:
 
 ## Ansible verantwoordelijkheden
 
-Ansible moet idempotent beheren wat hieronder nu als doelconfiguratie staat.
-De role-skeleton staat in `ansible/roles/pbs`.
+Ansible beheert de PBS OS- en serviceconfiguratie idempotent. De role staat in
+`ansible/roles/pbs`.
 
 ### Mount op `pbs01`
 
@@ -139,10 +141,13 @@ Gewenste state:
 | User | `pve-backup@pbs` exists |
 | Token | `pve-backup@pbs!pve` exists |
 | Backup ACL | `DatastoreBackup` on `/datastore/pbs-main` |
-| Restore ACL | `DatastoreReader` only when restore via this token is intended |
+| Restore ACL | `DatastoreReader` alleen wanneer restore via deze token bedoeld is |
 
-Token secrets mogen niet in git. Kies voor dit onderdeel nog een secret workflow:
-Ansible Vault, SOPS, 1Password CLI of een andere lokale secret backend.
+Token secrets mogen niet in git. De Ansible role schrijft de gegenereerde PBS
+token naar `.secrets/pbs_pve_token.json`; `.secrets/` wordt genegeerd door git.
+Als de token al in PBS bestaat maar dit lokale bestand ontbreekt, moet je het
+bestand herstellen of de token in PBS verwijderen zodat Ansible hem opnieuw kan
+genereren.
 
 ## Proxmox VE storage
 
@@ -158,8 +163,8 @@ OpenTofu moet uiteindelijk de Proxmox storage `pbs_pbs01` beheren:
 | Content | `backup` |
 
 De PBS certificaat-fingerprint en token secret komen uit de geautomatiseerde
-PBS-configuratie of uit de gekozen secret workflow, niet uit handmatige copy/paste
-als eindtoestand.
+PBS-configuratie en lokale secretbestanden, niet uit handmatige copy/paste als
+blijvende werkwijze.
 
 Backup jobs horen later ook declaratief beheerd te worden:
 

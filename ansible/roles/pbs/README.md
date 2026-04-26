@@ -13,7 +13,9 @@ Gewenste verantwoordelijkheden:
 - Dedicated PBS user/token/ACL's voor Proxmox VE beheren.
 - Validatiecommando's uitvoeren of documenteren als check target.
 
-Secrets zoals tokenwaarden horen niet in deze role als plain text.
+Secrets zoals tokenwaarden horen niet in deze role als plain text. De role
+schrijft de gegenereerde PBS token naar `.secrets/pbs_pve_token.json`, buiten
+git.
 
 ## Variabelen
 

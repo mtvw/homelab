@@ -148,10 +148,8 @@ Run lokale checks voordat je wijzigingen vertrouwt:
 make check
 ```
 
-`make check` doet bewust alleen checks die geen provider execution nodig hebben.
-Gebruik `make validate` apart voor OpenTofu schema-validatie; er is momenteel
-een lokale provider-handshake issue met de Proxmox provider die nog opgelost
-moet worden.
+`make check` doet lokale formatting- en Ansible syntax-checks. Gebruik
+`make validate` voor OpenTofu schema-validatie met de Proxmox provider.
 
 Voor echte services hoort er daarnaast een functionele validatie te zijn. Voor
 PBS betekent dat onder andere: PBS API bereikbaar, datastore bestaat, NFS mount
@@ -172,7 +170,7 @@ beschrijfbaar, Proxmox ziet de PBS storage en een restore-test is uitgevoerd.
 - OpenTofu gebruikt een dedicated Proxmox API token. SSH staat standaard uit.
 - Proxmox nodes gebruiken de `no-subscription` repository; de enterprise repo
   wordt na import declaratief uitgeschakeld.
-- Workload IPs starten bij `10.0.1.21`; allocations worden later centraal in de
-  repo bijgehouden.
-- Workloads komen later in aparte bestanden/modules, zodat de basislaag stabiel
-  blijft.
+- `docker01` gebruikt de eerste workload-allocatie: `10.0.1.21`, VMID `121`.
+- De volgende vrije workload-allocaties starten bij `10.0.1.22` en VMID `122`.
+- Workloads staan in `environments/homelab/workloads.tf`; herbruikbare patronen
+  kunnen later naar modules zodra er genoeg herhaling is.

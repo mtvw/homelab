@@ -38,6 +38,6 @@ locals {
   workload_network = {
     cidr       = "10.0.1.0/24"
     gateway    = "10.0.1.1"
-    first_host = "10.0.1.21"
+    first_host = "10.0.1.22"
   }
 }

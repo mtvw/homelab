@@ -38,8 +38,8 @@
 - Planned Proxmox storage ID for that export: `nas_media`.
 - PBS should use a separate NAS export, proposed as `/volume1/pbs`, rather than
   sharing the media export.
-- `tumuric` is ARM and remains a q-device only. PBS runs as an x86_64 VM inside
-  the Proxmox cluster, currently planned as `pbs01` at `10.0.1.20`.
+- `tumuric` is ARM and remains a q-device only. PBS runs as the x86_64 VM
+  `pbs01` at `10.0.1.20`.
 
 ## Workloads
 
