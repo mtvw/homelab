@@ -22,6 +22,9 @@ bereikbaar. Ansible configureert daarna de inhoud van de host. Vermijd
 Terraform provisioners voor normale OS-configuratie; die zijn moeilijk opnieuw
 betrouwbaar te draaien.
 
+VM's en LXC's horen dus altijd in de OpenTofu-laag. Ansible mag ervan uitgaan
+dat de host bestaat en bereikbaar is. Zie `docs/workloads.md`.
+
 ## Day-0 grens
 
 Alleen deze zaken mogen handmatig blijven, tenzij we later expliciet automation

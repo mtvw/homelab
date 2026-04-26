@@ -3,6 +3,10 @@
 Ansible beheert OS- en serviceconfiguratie nadat OpenTofu de machines heeft
 aangemaakt en cloud-init ze bereikbaar heeft gemaakt.
 
+Ansible maakt geen VM's of LXC's aan. Als een playbook een host op een IP
+verwacht, moet die host eerst als OpenTofu-resource bestaan. Zie
+`docs/workloads.md`.
+
 ## Structuur
 
 | Pad | Doel |

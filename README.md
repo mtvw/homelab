@@ -29,8 +29,50 @@ configuratie in git via OpenTofu, cloud-init, Ansible of idempotente scripts.
 | `docs/pbs.md` | PBS automatiseringsplan |
 | `docs/questions.md` | Open vragen voordat resources effectief worden aangemaakt |
 | `docs/storage.md` | NAS/NFS en PBS storageplan |
+| `docs/workloads.md` | Waar VM's/LXC's worden aangemaakt en hoe ze doorstromen naar Ansible |
 
-## Eerste gebruik
+## Hoe Je Deze Repo Leest
+
+Begin altijd hier:
+
+1. Lees [docs/automation.md](docs/automation.md) voor het model: wat doet
+   OpenTofu, wat doet cloud-init en wat doet Ansible.
+2. Lees [docs/bootstrap.md](docs/bootstrap.md) voor de kleine set day-0 stappen
+   die nog buiten automation vallen.
+3. Controleer [docs/decisions.md](docs/decisions.md) en [docs/ipam.md](docs/ipam.md)
+   zodat hostnames, IP's en gemaakte keuzes duidelijk zijn.
+4. Voer daarna de workflow hieronder uit.
+
+Een nieuwe component hoort altijd dezelfde route te volgen:
+
+```text
+day-0 alleen indien nodig
+OpenTofu resource toevoegen
+cloud-init bootstrap toevoegen indien het een nieuwe host is
+Ansible role/playbook toevoegen voor OS- en serviceconfiguratie
+validatie toevoegen
+```
+
+## Workflow
+
+### 1. Day-0 bootstrap
+
+Voer alleen de stappen uit [docs/bootstrap.md](docs/bootstrap.md) handmatig uit.
+Dat zijn de ankers die nodig zijn voordat automation kan praten met Proxmox, de
+NAS of het netwerk.
+
+Voor PBS betekent dit voorlopig alleen: de NAS export `/volume1/pbs` bestaat en
+geeft read/write NFS-toegang aan `pbs01` (`10.0.1.20`). De PBS VM zelf hoort
+niet handmatig te worden aangemaakt.
+
+### 2. OpenTofu
+
+OpenTofu beheert Proxmox-infra: VM's, LXC's, storage resources, cloud-init
+koppelingen en clusterbrede instellingen die via de Proxmox API kunnen.
+Nieuwe VM's en LXC's worden dus hier aangemaakt, niet in Ansible. Zie
+[docs/workloads.md](docs/workloads.md).
+
+Eerste lokale setup:
 
 ```sh
 cd environments/homelab
@@ -61,6 +103,49 @@ make validate
 make plan
 make apply
 ```
+
+### 3. cloud-init
+
+cloud-init wordt door OpenTofu aan nieuwe VM's gekoppeld. Gebruik dit alleen voor
+eerste boot: hostname, netwerk, SSH-toegang en minimale packages zodat Ansible
+kan overnemen.
+
+Templates horen in [cloud-init](cloud-init/). Een gebruiker voert cloud-init
+niet apart uit; Proxmox doet dat tijdens de eerste boot van een VM.
+
+### 4. Ansible
+
+Ansible configureert hosts nadat OpenTofu ze heeft gemaakt en cloud-init ze
+bereikbaar heeft gemaakt.
+
+Voor PBS is de bedoelde flow:
+
+```sh
+make ansible-pbs
+```
+
+Dit werkt pas nadat OpenTofu de VM `pbs01` heeft aangemaakt en cloud-init SSH
+toegang heeft klaargezet.
+
+Het PBS playbook staat in [ansible/playbooks/pbs.yml](ansible/playbooks/pbs.yml)
+en gebruikt de role onder [ansible/roles/pbs](ansible/roles/pbs/README.md).
+
+### 5. Validatie
+
+Run lokale checks voordat je wijzigingen vertrouwt:
+
+```sh
+make check
+```
+
+`make check` doet bewust alleen checks die geen provider execution nodig hebben.
+Gebruik `make validate` apart voor OpenTofu schema-validatie; er is momenteel
+een lokale provider-handshake issue met de Proxmox provider die nog opgelost
+moet worden.
+
+Voor echte services hoort er daarnaast een functionele validatie te zijn. Voor
+PBS betekent dat onder andere: PBS API bereikbaar, datastore bestaat, NFS mount
+beschrijfbaar, Proxmox ziet de PBS storage en een restore-test is uitgevoerd.
 
 ## Belangrijke keuzes
 

@@ -1,8 +1,10 @@
-# Future LXC and VM resources belong here or in dedicated modules once the
-# Proxmox baseline is stable.
+# Future LXC and VM resources belong here or in dedicated modules.
+#
+# Core infrastructure VMs can also get a dedicated file in this directory, such
+# as `pbs.tf` for `pbs01`.
 #
 # IP policy:
-# - static workload IPs start at 10.0.1.20
+# - static workload IPs start at 10.0.1.21
 # - allocations are recorded centrally in the repo
 # - no automatic compaction after deletion unless we intentionally renumber
 #
