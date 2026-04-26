@@ -1,0 +1,6 @@
+---
+- name: Document PBS automation implementation status
+  ansible.builtin.debug:
+    msg:
+      - "PBS role scaffold is present."
+      - "Next step: implement install, mount, datastore, jobs and ACL tasks idempotently."

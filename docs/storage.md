@@ -22,15 +22,17 @@ NAS iets anders toont, passen we `nfs_storages` aan.
 ## PBS
 
 Aanbevolen: maak een aparte NAS export voor PBS, niet dezelfde media-share.
+De toepasbare configuratie staat in [`docs/pbs.md`](pbs.md).
 
 Voorstel:
 
 | Doel | Waarde |
 | --- | --- |
 | NAS export | `/volume1/pbs` |
-| Mount op `tumuric` | `/mnt/pbs` |
+| PBS host | `pbs01` (`10.0.1.20`) |
+| Mount op `pbs01` | `/mnt/pbs` |
 | PBS datastore naam | `pbs-main` |
-| Proxmox storage ID | `pbs_tumuric` |
+| Proxmox storage ID | `pbs_pbs01` |
 
 Zodra die export bestaat en PBS draait, voegen we de PBS storage en backup jobs
 toe aan OpenTofu.

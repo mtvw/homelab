@@ -9,4 +9,5 @@ Workloads krijgen statische IP's in het management/guest subnet.
 | `10.0.1.12` | `pepper` |
 | `10.0.1.13` | `salt` |
 | `10.0.1.14` | `tumuric` |
-| `10.0.1.20+` | LXC/VM workloads |
+| `10.0.1.20` | `pbs01` |
+| `10.0.1.21+` | LXC/VM workloads |

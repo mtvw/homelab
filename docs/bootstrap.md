@@ -1,8 +1,9 @@
 # Bootstrap
 
-Deze stappen blijven voorlopig expliciet buiten OpenTofu omdat ze credentials,
-cluster-join state of package-installatie op machines vereisen voordat de API
-betrouwbaar declaratief te beheren is.
+Deze stappen blijven expliciet buiten OpenTofu omdat er op dit punt nog geen
+betrouwbare API, remote executor of beheerde host bestaat. Alles na deze day-0
+grens hoort in OpenTofu, cloud-init, Ansible of idempotente scripts. Zie
+[`automation.md`](automation.md).
 
 ## Proxmox cluster
 
@@ -32,11 +33,18 @@ Daarna:
 2. Voeg `tumuric` toe als q-device voor de Proxmox cluster.
 3. Controleer quorumgedrag wanneer een van de twee Proxmox nodes offline is.
 
-## PBS op `tumuric`
+## PBS VM in de cluster
 
-1. Installeer Proxmox Backup Server op Debian.
-2. Maak datastore(s), gebruiker(s) en token(s) aan.
-3. Beslis of PBS door Proxmox via OpenTofu als `storage_pbs` wordt toegevoegd.
+PBS draait niet op `tumuric`: die host is ARM en blijft alleen q-device.
+
+De PBS VM zelf wordt niet handmatig opgezet. OpenTofu moet `pbs01` aanmaken,
+cloud-init moet de VM bereikbaar maken en Ansible moet PBS configureren.
+
+Day-0 blijft alleen:
+
+1. Maak of bevestig de NAS export `/volume1/pbs`.
+2. Geef alleen `pbs01` (`10.0.1.20`) read/write NFS-toegang.
+3. Leg eventuele NAS-stappen vast totdat de NAS zelf ook geautomatiseerd wordt.
 
 ## OpenTofu bootstrap
 

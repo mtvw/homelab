@@ -59,7 +59,7 @@ variable "nfs_storages" {
 variable "workload_ip_start" {
   description = "First static IP for future LXC and VM workloads."
   type        = string
-  default     = "10.0.1.20"
+  default     = "10.0.1.21"
 }
 
 variable "workload_id_start" {
@@ -75,7 +75,7 @@ variable "pbs" {
     datastore = string
   })
   default = {
-    endpoint  = "10.0.1.14"
-    datastore = ""
+    endpoint  = "10.0.1.20"
+    datastore = "pbs-main"
   }
 }

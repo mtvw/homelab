@@ -15,7 +15,13 @@ locals {
   quorum_device = {
     name    = "tumuric"
     address = "10.0.1.14"
-    role    = "qdevice-pbs"
+    role    = "qdevice"
+  }
+
+  pbs = {
+    name    = "pbs01"
+    address = "10.0.1.20"
+    role    = "pbs"
   }
 
   nas = {
@@ -26,6 +32,6 @@ locals {
   workload_network = {
     cidr       = "10.0.1.0/24"
     gateway    = "10.0.1.1"
-    first_host = "10.0.1.20"
+    first_host = "10.0.1.21"
   }
 }

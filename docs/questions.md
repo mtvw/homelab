@@ -20,11 +20,11 @@ Deze vragen zijn nog niet beslist. Beantwoorde keuzes staan in
 
 ## PBS
 
-- Welke backup retentie wil je hanteren?
+- Is de voorgestelde retentie goed: 14 daily, 8 weekly, 12 monthly, 2 yearly?
 - Wil je PBS initieel alleen als storage in Proxmox koppelen, of ook backup jobs
   declaratief beheren?
-- Wil je PBS users/tokens/datastores later ook in IaC, of blijft PBS bootstrap
-  grotendeels handmatig?
+- Welke secret backend gebruiken we voor PBS token secrets: Ansible Vault, SOPS,
+  1Password CLI of iets anders?
 
 ## Workloads
 

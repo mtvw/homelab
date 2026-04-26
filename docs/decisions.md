@@ -8,6 +8,16 @@
   not as an OpenTofu-managed action.
 - API endpoint is IP-based for now: `https://10.0.1.12:8006/`.
 
+## Automation
+
+- This is an automation-first IaC repo. Persistent configuration should live in
+  OpenTofu, cloud-init, Ansible or idempotent scripts, not in manual runbooks.
+- Standard workflow: OpenTofu creates infrastructure, cloud-init performs first
+  boot bootstrap, Ansible configures operating systems and services.
+- Terraform/OpenTofu provisioners are avoided for normal OS configuration.
+- Manual steps are limited to the day-0 boundary documented in
+  `docs/bootstrap.md`.
+
 ## Authentication
 
 - OpenTofu uses a dedicated Proxmox API token for `terraform@pve`.
@@ -28,10 +38,12 @@
 - Planned Proxmox storage ID for that export: `nas_media`.
 - PBS should use a separate NAS export, proposed as `/volume1/pbs`, rather than
   sharing the media export.
+- `tumuric` is ARM and remains a q-device only. PBS runs as an x86_64 VM inside
+  the Proxmox cluster, currently planned as `pbs01` at `10.0.1.20`.
 
 ## Workloads
 
-- Future LXC/VM workload IPs start at `10.0.1.20`.
+- Future LXC/VM workload IPs start at `10.0.1.21`.
 - Future Proxmox VMID/CTID allocation starts at `120`.
 - IP allocations should be tracked centrally in the repo to avoid accidental
   renumbering.

@@ -5,7 +5,10 @@ output "inventory" {
     proxmox_nodes = local.proxmox_nodes
     quorum_device = local.quorum_device
     nas           = local.nas
-    pbs           = var.pbs
+    pbs = merge(local.pbs, {
+      endpoint  = var.pbs.endpoint
+      datastore = var.pbs.datastore
+    })
     workload_network = {
       cidr       = local.workload_network.cidr
       gateway    = local.workload_network.gateway

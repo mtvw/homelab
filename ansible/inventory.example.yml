@@ -1,0 +1,7 @@
+all:
+  children:
+    pbs:
+      hosts:
+        pbs01:
+          ansible_host: 10.0.1.20
+          ansible_user: root

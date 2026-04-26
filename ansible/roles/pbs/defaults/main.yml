@@ -1,0 +1,21 @@
+---
+pbs_datastore_name: pbs-main
+pbs_datastore_path: /mnt/pbs/pbs-main
+pbs_mount_path: /mnt/pbs
+pbs_nas_server: 10.0.1.11
+pbs_nas_export: /volume1/pbs
+pbs_nfs_options: rw,hard,noatime,nconnect=4,_netdev,x-systemd.automount,x-systemd.requires=network-online.target
+
+pbs_prune_schedule: "daily 03:00"
+pbs_keep_daily: 14
+pbs_keep_weekly: 8
+pbs_keep_monthly: 12
+pbs_keep_yearly: 2
+pbs_gc_schedule: "sun 04:00"
+
+pbs_verify_new_job: pbs-main-new
+pbs_verify_new_schedule: "daily 05:00"
+pbs_verify_full_job: pbs-main-full
+pbs_verify_full_schedule: monthly
+
+pbs_pve_auth_id: pve-backup@pbs!pve

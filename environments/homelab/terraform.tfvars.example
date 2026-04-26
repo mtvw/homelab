@@ -20,9 +20,9 @@ nfs_storages = {
 }
 
 pbs = {
-  endpoint  = "10.0.1.14"
-  datastore = ""
+  endpoint  = "10.0.1.20"
+  datastore = "pbs-main"
 }
 
-workload_ip_start = "10.0.1.20"
+workload_ip_start = "10.0.1.21"
 workload_id_start = 120

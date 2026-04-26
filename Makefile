@@ -1,4 +1,4 @@
-.PHONY: env-check fmt init validate plan apply
+.PHONY: env-check fmt init validate plan apply ansible-pbs
 
 TF_ROOT ?= environments/homelab
 ENV_FILE ?= .env
@@ -29,3 +29,6 @@ plan: env-check
 
 apply: env-check
 	tofu -chdir=$(TF_ROOT) apply
+
+ansible-pbs:
+	ansible-playbook -i ansible/inventory.example.yml ansible/playbooks/pbs.yml
