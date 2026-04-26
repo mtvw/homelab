@@ -79,3 +79,31 @@ variable "pbs" {
     datastore = "pbs-main"
   }
 }
+
+variable "pbs_vm" {
+  description = "OpenTofu-managed VM configuration for the Proxmox Backup Server host."
+  type = object({
+    enabled                 = optional(bool, true)
+    name                    = optional(string, "pbs01")
+    vm_id                   = optional(number, 120)
+    node_name               = optional(string, "pepper")
+    ipv4_address            = optional(string, "10.0.1.20/24")
+    ipv4_gateway            = optional(string, "10.0.1.1")
+    dns_servers             = optional(list(string), ["10.0.1.1"])
+    bridge                  = optional(string, "vmbr0")
+    image_url               = optional(string, "https://cloud.debian.org/images/cloud/trixie/latest/debian-13-genericcloud-amd64.qcow2")
+    image_file_name         = optional(string, "debian-13-genericcloud-amd64.qcow2")
+    image_datastore_id      = optional(string, "local")
+    image_download_timeout  = optional(number, 1800)
+    disk_datastore_id       = optional(string, "local-lvm")
+    cloud_init_datastore_id = optional(string, "local-lvm")
+    disk_size               = optional(number, 32)
+    cores                   = optional(number, 2)
+    memory_mb               = optional(number, 4096)
+    cpu_type                = optional(string, "x86-64-v2-AES")
+    ssh_username            = optional(string, "debian")
+    ssh_public_key_path     = optional(string, "~/.ssh/id_ed25519.pub")
+    tags                    = optional(list(string), ["terraform", "core", "pbs"])
+  })
+  default = {}
+}

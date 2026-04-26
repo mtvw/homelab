@@ -19,8 +19,8 @@ locals {
   }
 
   pbs = {
-    name    = "pbs01"
-    address = "10.0.1.20"
+    name    = var.pbs_vm.name
+    address = var.pbs.endpoint
     role    = "pbs"
   }
 

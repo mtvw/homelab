@@ -8,6 +8,8 @@ output "inventory" {
     pbs = merge(local.pbs, {
       endpoint  = var.pbs.endpoint
       datastore = var.pbs.datastore
+      vm_id     = var.pbs_vm.vm_id
+      node_name = var.pbs_vm.node_name
     })
     workload_network = {
       cidr       = local.workload_network.cidr
