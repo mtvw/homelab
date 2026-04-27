@@ -1,0 +1,121 @@
+---
+{% set radarr_host = docker_media_services | selectattr('name', 'equalto', 'radarr') | map(attribute='traefik_host') | first %}
+{% set sonarr_host = docker_media_services | selectattr('name', 'equalto', 'sonarr') | map(attribute='traefik_host') | first %}
+{% set sabnzbd_host = docker_media_services | selectattr('name', 'equalto', 'sabnzbd') | map(attribute='traefik_host') | first %}
+{% set homepage_host = docker_media_services | selectattr('name', 'equalto', 'homepage') | map(attribute='traefik_host') | first %}
+- Media:
+    - Jellyfin:
+        icon: jellyfin.png
+        href: {{ docker_homepage_jellyfin_url | quote }}
+        description: Media server
+        siteMonitor: {{ docker_homepage_jellyfin_url | quote }}
+{% if docker_homepage_jellyfin_api_key | length > 0 %}
+        widget:
+          type: jellyfin
+          url: {{ docker_homepage_jellyfin_url | quote }}
+          key: {{ docker_homepage_jellyfin_api_key | quote }}
+          version: 2
+          enableBlocks: true
+          fields: ["movies", "series", "episodes"]
+{% endif %}
+
+    - Radarr:
+        icon: radarr.png
+        href: {{ (('http://' ~ radarr_host) if docker_traefik_enabled else (docker_homepage_base_url ~ ':7878')) | quote }}
+        description: Movie management
+        siteMonitor: {{ (docker_homepage_base_url ~ ':7878') | quote }}
+        server: {{ docker_homepage_docker_server_name }}
+        container: radarr
+        showStats: true
+{% if docker_homepage_radarr_api_key | length > 0 %}
+        widget:
+          type: radarr
+          url: {{ (docker_homepage_base_url ~ ':7878') | quote }}
+          key: {{ docker_homepage_radarr_api_key | quote }}
+          enableQueue: true
+          fields: ["wanted", "missing", "queued", "movies"]
+{% endif %}
+
+    - Sonarr:
+        icon: sonarr.png
+        href: {{ (('http://' ~ sonarr_host) if docker_traefik_enabled else (docker_homepage_base_url ~ ':8989')) | quote }}
+        description: Series management
+        siteMonitor: {{ (docker_homepage_base_url ~ ':8989') | quote }}
+        server: {{ docker_homepage_docker_server_name }}
+        container: sonarr
+        showStats: true
+{% if docker_homepage_sonarr_api_key | length > 0 %}
+        widget:
+          type: sonarr
+          url: {{ (docker_homepage_base_url ~ ':8989') | quote }}
+          key: {{ docker_homepage_sonarr_api_key | quote }}
+          enableQueue: true
+          fields: ["wanted", "queued", "series"]
+{% endif %}
+
+    - SABnzbd:
+        icon: sabnzbd.png
+        href: {{ (('http://' ~ sabnzbd_host) if docker_traefik_enabled else (docker_homepage_base_url ~ ':8080')) | quote }}
+        description: Download client
+        siteMonitor: {{ (docker_homepage_base_url ~ ':8080') | quote }}
+        server: {{ docker_homepage_docker_server_name }}
+        container: sabnzbd
+        showStats: true
+{% if docker_homepage_sabnzbd_api_key | length > 0 %}
+        widget:
+          type: sabnzbd
+          url: {{ (docker_homepage_base_url ~ ':8080') | quote }}
+          key: {{ docker_homepage_sabnzbd_api_key | quote }}
+          fields: ["rate", "queue", "timeleft"]
+{% endif %}
+
+- Infrastructure:
+    - Homepage:
+        icon: homepage.png
+        href: {{ (('http://' ~ homepage_host) if docker_traefik_enabled else (docker_homepage_base_url ~ ':3000')) | quote }}
+        description: Homelab dashboard
+        siteMonitor: {{ (docker_homepage_base_url ~ ':3000') | quote }}
+        server: {{ docker_homepage_docker_server_name }}
+        container: homepage
+        showStats: true
+
+{% if docker_traefik_enabled %}
+    - Traefik:
+        icon: traefik.png
+        href: {{ (docker_homepage_base_url ~ ':' ~ docker_traefik_dashboard_port | string) | quote }}
+        description: Docker reverse proxy
+        siteMonitor: {{ (docker_homepage_base_url ~ ':' ~ docker_traefik_dashboard_port | string) | quote }}
+        server: {{ docker_homepage_docker_server_name }}
+        container: traefik
+        showStats: true
+{% endif %}
+
+    - Proxmox VE:
+        icon: proxmox.png
+        href: {{ docker_homepage_proxmox_url | quote }}
+        description: Virtualization cluster
+        siteMonitor: {{ docker_homepage_proxmox_url | quote }}
+{% if docker_homepage_proxmox_username | length > 0 and docker_homepage_proxmox_password | length > 0 %}
+        widget:
+          type: proxmox
+          url: {{ docker_homepage_proxmox_url | quote }}
+          username: {{ docker_homepage_proxmox_username | quote }}
+          password: {{ docker_homepage_proxmox_password | quote }}
+          node: {{ docker_homepage_proxmox_node | quote }}
+          fields: ["vms", "lxc", "resources.cpu", "resources.mem"]
+{% endif %}
+
+    - Proxmox Backup Server:
+        icon: proxmox.png
+        href: {{ docker_homepage_pbs_url | quote }}
+        description: Backup datastore
+        siteMonitor: {{ docker_homepage_pbs_url | quote }}
+{% if docker_homepage_pbs_username | length > 0 and docker_homepage_pbs_password | length > 0 %}
+        widget:
+          type: proxmoxbackupserver
+          url: {{ docker_homepage_pbs_url | quote }}
+          username: {{ docker_homepage_pbs_username | quote }}
+          password: {{ docker_homepage_pbs_password | quote }}
+          datastore: {{ docker_homepage_pbs_datastore | quote }}
+          fields: ["datastore_usage", "failed_tasks_24h", "cpu_usage", "memory_usage"]
+{% endif %}

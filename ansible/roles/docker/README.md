@@ -57,6 +57,24 @@ instellingen, zodat de Docker socket-integratie werkt met de standaard
 containerrechten. Pas `docker_stack_allowed_hosts` aan als Homepage via een
 andere DNS-naam, reverse proxy of ander adres benaderd wordt.
 
+De Homepage configuratie wordt door Ansible beheerd vanuit
+`templates/homepage/*.yaml.j2`. Standaard worden kaarten aangemaakt voor
+Jellyfin, Radarr, Sonarr, SABnzbd, Homepage, Traefik, Proxmox VE en Proxmox
+Backup Server. Docker containerstatistieken werken via `/var/run/docker.sock`;
+service-widgets worden pas gerenderd wanneer de bijbehorende secrets gezet zijn:
+
+| Variabele | Widget |
+| --- | --- |
+| `docker_homepage_radarr_api_key` | Radarr |
+| `docker_homepage_sonarr_api_key` | Sonarr |
+| `docker_homepage_sabnzbd_api_key` | SABnzbd |
+| `docker_homepage_jellyfin_api_key` | Jellyfin |
+| `docker_homepage_proxmox_username` + `docker_homepage_proxmox_password` | Proxmox VE |
+| `docker_homepage_pbs_username` + `docker_homepage_pbs_password` | PBS |
+
+Zet deze waarden via inventory, group vars of Ansible Vault, niet in plain-text
+defaults.
+
 De role valideert standaard dat `/srv/media` leesbaar is en `/srv/downloads`
 schrijfbaar is voor UID/GID `1000`. Zet `docker_media_validate_writable: true`
 als de NAS export door Radarr/Sonarr direct beschreven moet kunnen worden.

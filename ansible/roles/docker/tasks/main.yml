@@ -113,6 +113,18 @@
   loop: "{{ docker_media_services }}"
   when: docker_stack_enabled
 
+- name: Install Homepage configuration files
+  ansible.builtin.template:
+    src: "homepage/{{ item }}.j2"
+    dest: "{{ docker_stack_config_path }}/homepage/{{ item }}"
+    owner: "{{ docker_stack_puid }}"
+    group: "{{ docker_stack_pgid }}"
+    mode: "0644"
+  loop: "{{ docker_homepage_config_files }}"
+  register: docker_homepage_config
+  no_log: "{{ docker_homepage_config_no_log }}"
+  when: docker_stack_enabled and docker_homepage_config_enabled
+
 - name: Install Docker media stack compose file
   ansible.builtin.template:
     src: media-stack.compose.yml.j2
@@ -142,7 +154,7 @@
   ansible.builtin.systemd:
     name: "{{ docker_stack_name }}"
     enabled: true
-    state: "{{ 'restarted' if docker_stack_compose.changed else 'started' }}"
+    state: "{{ 'restarted' if (docker_stack_compose.changed or (docker_homepage_config is defined and docker_homepage_config.changed)) else 'started' }}"
   when: docker_stack_enabled
 
 - name: Ensure Docker media stack HTTP ports are reachable locally

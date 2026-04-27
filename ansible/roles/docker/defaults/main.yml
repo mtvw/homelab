@@ -20,6 +20,31 @@ docker_stack_pgid: "1000"
 docker_stack_allowed_hosts:
   - 10.0.1.21:3000
   - homepage.docker01.home.arpa
+docker_homepage_config_enabled: true
+docker_homepage_config_no_log: true
+docker_homepage_title: Homelab
+docker_homepage_description: Matthias homelab
+docker_homepage_docker_server_name: docker01
+docker_homepage_base_url: http://10.0.1.21
+docker_homepage_proxmox_url: https://10.0.1.12:8006
+docker_homepage_proxmox_node: pepper
+docker_homepage_proxmox_username: ""
+docker_homepage_proxmox_password: ""
+docker_homepage_pbs_url: https://10.0.1.20:8007
+docker_homepage_pbs_datastore: pbs-main
+docker_homepage_pbs_username: ""
+docker_homepage_pbs_password: ""
+docker_homepage_jellyfin_url: http://10.0.1.22:8096
+docker_homepage_jellyfin_api_key: ""
+docker_homepage_radarr_api_key: ""
+docker_homepage_sonarr_api_key: ""
+docker_homepage_sabnzbd_api_key: ""
+docker_homepage_config_files:
+  - settings.yaml
+  - services.yaml
+  - docker.yaml
+  - bookmarks.yaml
+  - widgets.yaml
 
 docker_traefik_enabled: true
 docker_traefik_image: traefik:v3

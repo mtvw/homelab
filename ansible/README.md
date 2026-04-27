@@ -85,6 +85,13 @@ hosts-records naar `10.0.1.21` wijzen, zijn de standaard routes:
 | SABnzbd | `http://sabnzbd.docker01.home.arpa` |
 | Homepage | `http://homepage.docker01.home.arpa` |
 
+Homepage configuratie wordt vanuit de Docker role beheerd en naar
+`/opt/media-stack/config/homepage` uitgerold. De dashboardkaarten voor Radarr,
+Sonarr, SABnzbd, Homepage en Traefik gebruiken Docker-statistieken via de
+read-only Docker socket. Jellyfin, Proxmox VE en PBS staan ook op het dashboard;
+API widgets verschijnen zodra de bijbehorende `docker_homepage_*` secret
+variabelen in inventory, group vars of Ansible Vault gezet zijn.
+
 ## Jellyfin
 
 `make ansible-jellyfin` mount de NAS media export
