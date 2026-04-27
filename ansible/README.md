@@ -62,16 +62,28 @@ make ansible-known-hosts
 
 `make ansible-docker` installeert Docker op `docker01`, mount
 `10.0.1.11:/volume1/media` op `/srv/media`, maakt `/srv/downloads` voor SABnzbd
-en beheert Radarr, Sonarr, SABnzbd en Homepage via `media-stack.service`.
+en beheert Traefik, Radarr, Sonarr, SABnzbd en Homepage via
+`media-stack.service`.
 
 De services zijn bereikbaar op:
 
 | Service | URL |
 | --- | --- |
+| Traefik dashboard | `http://10.0.1.21:8081` |
 | Radarr | `http://10.0.1.21:7878` |
 | Sonarr | `http://10.0.1.21:8989` |
 | SABnzbd | `http://10.0.1.21:8080` |
 | Homepage | `http://10.0.1.21:3000` |
+
+Traefik luistert daarnaast op `http://10.0.1.21:80`. Zodra DNS of lokale
+hosts-records naar `10.0.1.21` wijzen, zijn de standaard routes:
+
+| Service | Traefik URL |
+| --- | --- |
+| Radarr | `http://radarr.docker01.home.arpa` |
+| Sonarr | `http://sonarr.docker01.home.arpa` |
+| SABnzbd | `http://sabnzbd.docker01.home.arpa` |
+| Homepage | `http://homepage.docker01.home.arpa` |
 
 ## Jellyfin
 

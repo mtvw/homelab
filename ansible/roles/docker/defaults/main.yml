@@ -19,6 +19,14 @@ docker_stack_puid: "1000"
 docker_stack_pgid: "1000"
 docker_stack_allowed_hosts:
   - 10.0.1.21:3000
+  - homepage.docker01.home.arpa
+
+docker_traefik_enabled: true
+docker_traefik_image: traefik:v3
+docker_traefik_http_port: 80
+docker_traefik_dashboard_port: 8081
+docker_traefik_dashboard_insecure: true
+docker_traefik_domain: docker01.home.arpa
 
 docker_media_mount_enabled: true
 docker_media_validate_readable: true
@@ -34,6 +42,7 @@ docker_media_services:
   - name: radarr
     image: lscr.io/linuxserver/radarr:latest
     port: 7878
+    traefik_host: radarr.{{ docker_traefik_domain }}
     config_subdir: radarr
     config_mount_path: /config
     include_stack_ids: true
@@ -42,6 +51,7 @@ docker_media_services:
   - name: sonarr
     image: lscr.io/linuxserver/sonarr:latest
     port: 8989
+    traefik_host: sonarr.{{ docker_traefik_domain }}
     config_subdir: sonarr
     config_mount_path: /config
     include_stack_ids: true
@@ -50,6 +60,7 @@ docker_media_services:
   - name: sabnzbd
     image: lscr.io/linuxserver/sabnzbd:latest
     port: 8080
+    traefik_host: sabnzbd.{{ docker_traefik_domain }}
     config_subdir: sabnzbd
     config_mount_path: /config
     include_stack_ids: true
@@ -58,6 +69,7 @@ docker_media_services:
   - name: homepage
     image: ghcr.io/gethomepage/homepage:latest
     port: 3000
+    traefik_host: homepage.{{ docker_traefik_domain }}
     config_subdir: homepage
     config_mount_path: /app/config
     include_stack_ids: false

@@ -1,5 +1,23 @@
 ---
 services:
+{% if docker_traefik_enabled %}
+  traefik:
+    image: {{ docker_traefik_image }}
+    container_name: traefik
+    command:
+      - --api.dashboard=true
+      - --api.insecure={{ docker_traefik_dashboard_insecure | string | lower }}
+      - --entrypoints.web.address=:80
+      - --providers.docker=true
+      - --providers.docker.exposedbydefault=false
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    ports:
+      - "{{ docker_traefik_http_port }}:80"
+      - "{{ docker_traefik_dashboard_port }}:8080"
+    restart: unless-stopped
+
+{% endif %}
 {% for service in docker_media_services %}
   {{ service.name }}:
     image: {{ service.image }}
@@ -26,5 +44,12 @@ services:
 {% endif %}
     ports:
       - "{{ service.port }}:{{ service.port }}"
+{% if docker_traefik_enabled and service.traefik_host is defined %}
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.{{ service.name }}.entrypoints: web
+      traefik.http.routers.{{ service.name }}.rule: Host(`{{ service.traefik_host }}`)
+      traefik.http.services.{{ service.name }}.loadbalancer.server.port: "{{ service.port }}"
+{% endif %}
     restart: unless-stopped
 {% endfor %}
