@@ -17,6 +17,8 @@ docker_stack_timezone: Europe/Brussels
 docker_stack_user: debian
 docker_stack_puid: "1000"
 docker_stack_pgid: "1000"
+docker_stack_allowed_hosts:
+  - 10.0.1.21:3000
 
 docker_media_mount_enabled: true
 docker_media_validate_readable: true
@@ -33,11 +35,34 @@ docker_media_services:
     image: lscr.io/linuxserver/radarr:latest
     port: 7878
     config_subdir: radarr
+    config_mount_path: /config
+    include_stack_ids: true
+    mount_media: true
+    mount_downloads: true
   - name: sonarr
     image: lscr.io/linuxserver/sonarr:latest
     port: 8989
     config_subdir: sonarr
+    config_mount_path: /config
+    include_stack_ids: true
+    mount_media: true
+    mount_downloads: true
   - name: sabnzbd
     image: lscr.io/linuxserver/sabnzbd:latest
     port: 8080
     config_subdir: sabnzbd
+    config_mount_path: /config
+    include_stack_ids: true
+    mount_media: true
+    mount_downloads: true
+  - name: homepage
+    image: ghcr.io/gethomepage/homepage:latest
+    port: 3000
+    config_subdir: homepage
+    config_mount_path: /app/config
+    include_stack_ids: false
+    mount_media: false
+    mount_downloads: false
+    mount_docker_socket: true
+    environment:
+      HOMEPAGE_ALLOWED_HOSTS: "{{ docker_stack_allowed_hosts | join(',') }}"

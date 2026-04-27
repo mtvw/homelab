@@ -62,7 +62,7 @@ make ansible-known-hosts
 
 `make ansible-docker` installeert Docker op `docker01`, mount
 `10.0.1.11:/volume1/media` op `/srv/media`, maakt `/srv/downloads` voor SABnzbd
-en beheert Radarr, Sonarr en SABnzbd via `media-stack.service`.
+en beheert Radarr, Sonarr, SABnzbd en Homepage via `media-stack.service`.
 
 De services zijn bereikbaar op:
 
@@ -71,6 +71,7 @@ De services zijn bereikbaar op:
 | Radarr | `http://10.0.1.21:7878` |
 | Sonarr | `http://10.0.1.21:8989` |
 | SABnzbd | `http://10.0.1.21:8080` |
+| Homepage | `http://10.0.1.21:3000` |
 
 ## Jellyfin
 

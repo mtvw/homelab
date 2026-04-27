@@ -9,8 +9,8 @@ Verantwoordelijkheden:
 - Beheergebruikers toevoegen aan de `docker` group.
 - Valideren dat de Docker daemon bereikbaar is.
 - Optioneel de media NAS export mounten op de Docker host.
-- De Radarr, Sonarr en SABnzbd containers beheren als systemd-backed Compose
-  stack.
+- De Radarr, Sonarr, SABnzbd en Homepage containers beheren als systemd-backed
+  Compose stack.
 
 ## Media stack
 
@@ -22,11 +22,19 @@ unit `media-stack.service`.
 | Radarr | `7878` |
 | Sonarr | `8989` |
 | SABnzbd | `8080` |
+| Homepage | `3000` |
 
 Containerconfiguratie staat onder `/opt/media-stack/config`. De NAS media export
 wordt op de VM gemount op `/srv/media` en in de containers beschikbaar gemaakt
 als `/media`. Downloads staan standaard lokaal op `/srv/downloads` en worden in
 de containers beschikbaar gemaakt als `/downloads`.
+
+Homepage gebruikt `/opt/media-stack/config/homepage` als `/app/config`, mount de
+Docker socket read-only voor containerintegraties en accepteert standaard
+`10.0.1.21:3000` via `HOMEPAGE_ALLOWED_HOSTS`. Homepage gebruikt bewust niet de
+gedeelde `PUID`/`PGID` instellingen, zodat de Docker socket-integratie werkt met
+de standaard containerrechten. Pas `docker_stack_allowed_hosts` aan als Homepage
+via een DNS-naam, reverse proxy of ander adres benaderd wordt.
 
 De role valideert standaard dat `/srv/media` leesbaar is en `/srv/downloads`
 schrijfbaar is voor UID/GID `1000`. Zet `docker_media_validate_writable: true`

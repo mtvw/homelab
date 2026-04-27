@@ -5,13 +5,25 @@ services:
     image: {{ service.image }}
     container_name: {{ service.name }}
     environment:
+{% if service.include_stack_ids | default(true) %}
       PUID: "{{ docker_stack_puid }}"
       PGID: "{{ docker_stack_pgid }}"
+{% endif %}
       TZ: {{ docker_stack_timezone }}
+{% for key, value in service.environment | default({}) | dictsort %}
+      {{ key }}: {{ value | quote }}
+{% endfor %}
     volumes:
-      - {{ docker_stack_config_path }}/{{ service.config_subdir }}:/config
+      - {{ docker_stack_config_path }}/{{ service.config_subdir }}:{{ service.config_mount_path | default('/config') }}
+{% if service.mount_media | default(true) %}
       - {{ docker_media_path }}:/media
+{% endif %}
+{% if service.mount_downloads | default(true) %}
       - {{ docker_downloads_path }}:/downloads
+{% endif %}
+{% if service.mount_docker_socket | default(false) %}
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+{% endif %}
     ports:
       - "{{ service.port }}:{{ service.port }}"
     restart: unless-stopped
