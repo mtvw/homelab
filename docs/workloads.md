@@ -54,11 +54,19 @@ Ansible is configuratiebeheer, geen VM-provisioninglaag.
 
 ## Docker host
 
-`docker01` is een Debian workload VM voor Docker containers.
+`docker01` is een Debian workload VM voor Docker containers. De Docker role
+installeert ook de media-stack containers Radarr, Sonarr en SABnzbd.
 
 1. OpenTofu maakt VM `docker01` op `10.0.1.21`.
 2. cloud-init zet `docker01` klaar voor Ansible.
-3. `make ansible-docker` installeert Docker en valideert de daemon.
+3. `make ansible-docker` installeert Docker, mount de NAS media export op
+   `/srv/media`, maakt een lokale downloads-directory op `/srv/downloads`, start
+   `media-stack.service` en valideert de daemon plus poorten `7878`, `8989` en
+   `8080`.
+4. De eerste webconfiguratie gebeurt via:
+   - Radarr: `http://10.0.1.21:7878`
+   - Sonarr: `http://10.0.1.21:8989`
+   - SABnzbd: `http://10.0.1.21:8080`
 
 ## Jellyfin
 

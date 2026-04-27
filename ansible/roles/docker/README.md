@@ -8,6 +8,29 @@ Verantwoordelijkheden:
 - De Docker service inschakelen en starten.
 - Beheergebruikers toevoegen aan de `docker` group.
 - Valideren dat de Docker daemon bereikbaar is.
+- Optioneel de media NAS export mounten op de Docker host.
+- De Radarr, Sonarr en SABnzbd containers beheren als systemd-backed Compose
+  stack.
+
+## Media stack
+
+Standaard maakt de role `/opt/media-stack/compose.yml` aan en beheert systemd
+unit `media-stack.service`.
+
+| Service | Poort |
+| --- | --- |
+| Radarr | `7878` |
+| Sonarr | `8989` |
+| SABnzbd | `8080` |
+
+Containerconfiguratie staat onder `/opt/media-stack/config`. De NAS media export
+wordt op de VM gemount op `/srv/media` en in de containers beschikbaar gemaakt
+als `/media`. Downloads staan standaard lokaal op `/srv/downloads` en worden in
+de containers beschikbaar gemaakt als `/downloads`.
+
+De role valideert standaard dat `/srv/media` leesbaar is en `/srv/downloads`
+schrijfbaar is voor UID/GID `1000`. Zet `docker_media_validate_writable: true`
+als de NAS export door Radarr/Sonarr direct beschreven moet kunnen worden.
 
 ## Variabelen
 

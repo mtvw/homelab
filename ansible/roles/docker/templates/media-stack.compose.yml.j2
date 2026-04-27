@@ -1,0 +1,18 @@
+---
+services:
+{% for service in docker_media_services %}
+  {{ service.name }}:
+    image: {{ service.image }}
+    container_name: {{ service.name }}
+    environment:
+      PUID: "{{ docker_stack_puid }}"
+      PGID: "{{ docker_stack_pgid }}"
+      TZ: {{ docker_stack_timezone }}
+    volumes:
+      - {{ docker_stack_config_path }}/{{ service.config_subdir }}:/config
+      - {{ docker_media_path }}:/media
+      - {{ docker_downloads_path }}:/downloads
+    ports:
+      - "{{ service.port }}:{{ service.port }}"
+    restart: unless-stopped
+{% endfor %}

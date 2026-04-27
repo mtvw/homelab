@@ -58,6 +58,20 @@ ssh-keygen -R 10.0.1.21
 make ansible-known-hosts
 ```
 
+## Docker media stack
+
+`make ansible-docker` installeert Docker op `docker01`, mount
+`10.0.1.11:/volume1/media` op `/srv/media`, maakt `/srv/downloads` voor SABnzbd
+en beheert Radarr, Sonarr en SABnzbd via `media-stack.service`.
+
+De services zijn bereikbaar op:
+
+| Service | URL |
+| --- | --- |
+| Radarr | `http://10.0.1.21:7878` |
+| Sonarr | `http://10.0.1.21:8989` |
+| SABnzbd | `http://10.0.1.21:8080` |
+
 ## Jellyfin
 
 `make ansible-jellyfin` mount de NAS media export

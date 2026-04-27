@@ -26,3 +26,129 @@
       - docker
       - info
   changed_when: false
+
+- name: Ensure Docker media mountpoint exists
+  ansible.builtin.file:
+    path: "{{ docker_media_path }}"
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+  when: docker_stack_enabled and docker_media_mount_enabled
+
+- name: Mount Docker media NAS export
+  ansible.posix.mount:
+    path: "{{ docker_media_path }}"
+    src: "{{ docker_media_nas_server }}:{{ docker_media_nas_export }}"
+    fstype: "{{ docker_media_nfs_fstype }}"
+    opts: "{{ docker_media_nfs_options }}"
+    state: mounted
+  when: docker_stack_enabled and docker_media_mount_enabled
+
+- name: Validate Docker media path is readable
+  ansible.builtin.command:
+    argv:
+      - runuser
+      - -u
+      - "{{ docker_stack_user }}"
+      - --
+      - test
+      - -r
+      - "{{ docker_media_path }}"
+  changed_when: false
+  when: docker_stack_enabled and docker_media_validate_readable
+
+- name: Validate Docker media path is writable when direct imports are enabled
+  ansible.builtin.command:
+    argv:
+      - runuser
+      - -u
+      - "{{ docker_stack_user }}"
+      - --
+      - test
+      - -w
+      - "{{ docker_media_path }}"
+  changed_when: false
+  when: docker_stack_enabled and docker_media_validate_writable
+
+- name: Ensure Docker stack root directories exist
+  ansible.builtin.file:
+    path: "{{ item.path }}"
+    state: directory
+    owner: "{{ item.owner }}"
+    group: "{{ item.group }}"
+    mode: "0755"
+  loop:
+    - path: "{{ docker_stack_path }}"
+      owner: root
+      group: root
+    - path: "{{ docker_stack_config_path }}"
+      owner: root
+      group: root
+    - path: "{{ docker_downloads_path }}"
+      owner: "{{ docker_stack_puid }}"
+      group: "{{ docker_stack_pgid }}"
+  when: docker_stack_enabled
+
+- name: Validate Docker downloads path is writable
+  ansible.builtin.command:
+    argv:
+      - runuser
+      - -u
+      - "{{ docker_stack_user }}"
+      - --
+      - test
+      - -w
+      - "{{ docker_downloads_path }}"
+  changed_when: false
+  when: docker_stack_enabled
+
+- name: Ensure Docker service config directories exist
+  ansible.builtin.file:
+    path: "{{ docker_stack_config_path }}/{{ item.config_subdir }}"
+    state: directory
+    owner: "{{ docker_stack_puid }}"
+    group: "{{ docker_stack_pgid }}"
+    mode: "0755"
+  loop: "{{ docker_media_services }}"
+  when: docker_stack_enabled
+
+- name: Install Docker media stack compose file
+  ansible.builtin.template:
+    src: media-stack.compose.yml.j2
+    dest: "{{ docker_stack_compose_file }}"
+    owner: root
+    group: root
+    mode: "0644"
+  register: docker_stack_compose
+  when: docker_stack_enabled
+
+- name: Install Docker media stack systemd unit
+  ansible.builtin.template:
+    src: media-stack.service.j2
+    dest: "/etc/systemd/system/{{ docker_stack_name }}.service"
+    owner: root
+    group: root
+    mode: "0644"
+  register: docker_stack_systemd_unit
+  when: docker_stack_enabled
+
+- name: Reload systemd after Docker media stack unit changes
+  ansible.builtin.systemd:
+    daemon_reload: true
+  when: docker_stack_enabled and docker_stack_systemd_unit.changed
+
+- name: Ensure Docker media stack is enabled and running
+  ansible.builtin.systemd:
+    name: "{{ docker_stack_name }}"
+    enabled: true
+    state: "{{ 'restarted' if docker_stack_compose.changed else 'started' }}"
+  when: docker_stack_enabled
+
+- name: Ensure Docker media stack HTTP ports are reachable locally
+  ansible.builtin.wait_for:
+    host: 127.0.0.1
+    port: "{{ item.port }}"
+    timeout: 120
+  loop: "{{ docker_media_services }}"
+  when: docker_stack_enabled

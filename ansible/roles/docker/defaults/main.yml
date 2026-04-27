@@ -5,3 +5,39 @@ docker_users:
 docker_packages:
   - ca-certificates
   - docker.io
+  - docker-compose
+  - nfs-common
+
+docker_stack_enabled: true
+docker_stack_name: media-stack
+docker_stack_path: /opt/media-stack
+docker_stack_config_path: "{{ docker_stack_path }}/config"
+docker_stack_compose_file: "{{ docker_stack_path }}/compose.yml"
+docker_stack_timezone: Europe/Brussels
+docker_stack_user: debian
+docker_stack_puid: "1000"
+docker_stack_pgid: "1000"
+
+docker_media_mount_enabled: true
+docker_media_validate_readable: true
+docker_media_validate_writable: false
+docker_media_path: /srv/media
+docker_media_nas_server: 10.0.1.11
+docker_media_nas_export: /volume1/media
+docker_media_nfs_fstype: nfs4
+docker_media_nfs_options: rw,hard,noatime,noresvport,_netdev,x-systemd.automount,x-systemd.requires=network-online.target
+docker_downloads_path: /srv/downloads
+
+docker_media_services:
+  - name: radarr
+    image: lscr.io/linuxserver/radarr:latest
+    port: 7878
+    config_subdir: radarr
+  - name: sonarr
+    image: lscr.io/linuxserver/sonarr:latest
+    port: 8989
+    config_subdir: sonarr
+  - name: sabnzbd
+    image: lscr.io/linuxserver/sabnzbd:latest
+    port: 8080
+    config_subdir: sabnzbd

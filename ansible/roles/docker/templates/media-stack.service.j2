@@ -1,0 +1,19 @@
+[Unit]
+Description=Docker Compose media stack
+Requires=docker.service
+After=docker.service network-online.target
+{% if docker_media_mount_enabled %}
+RequiresMountsFor={{ docker_media_path }}
+{% endif %}
+RequiresMountsFor={{ docker_downloads_path }}
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+WorkingDirectory={{ docker_stack_path }}
+ExecStart=/usr/bin/docker-compose -f {{ docker_stack_compose_file }} up -d
+ExecStop=/usr/bin/docker-compose -f {{ docker_stack_compose_file }} down
+TimeoutStartSec=0
+
+[Install]
+WantedBy=multi-user.target
