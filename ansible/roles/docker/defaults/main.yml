@@ -19,13 +19,14 @@ docker_stack_puid: "1000"
 docker_stack_pgid: "1000"
 docker_stack_allowed_hosts:
   - 10.0.1.21:3000
-  - homepage.docker01.home.arpa
+  - thuis.infinita.be
+  - homepage.thuis.infinita.be
 docker_homepage_config_enabled: true
 docker_homepage_config_no_log: true
 docker_homepage_title: Homelab
 docker_homepage_description: Matthias homelab
 docker_homepage_docker_server_name: docker01
-docker_homepage_base_url: http://10.0.1.21
+docker_homepage_base_url: http://thuis.infinita.be
 docker_homepage_proxmox_url: https://10.0.1.12:8006
 docker_homepage_proxmox_node: pepper
 docker_homepage_proxmox_username: ""
@@ -51,7 +52,8 @@ docker_traefik_image: traefik:v3
 docker_traefik_http_port: 80
 docker_traefik_dashboard_port: 8081
 docker_traefik_dashboard_insecure: true
-docker_traefik_domain: docker01.home.arpa
+docker_traefik_domain: thuis.infinita.be
+docker_traefik_base_host: thuis.infinita.be
 
 docker_media_mount_enabled: true
 docker_media_validate_readable: true
@@ -95,6 +97,8 @@ docker_media_services:
     image: ghcr.io/gethomepage/homepage:latest
     port: 3000
     traefik_host: homepage.{{ docker_traefik_domain }}
+    traefik_extra_hosts:
+      - "{{ docker_traefik_base_host }}"
     config_subdir: homepage
     config_mount_path: /app/config
     include_stack_ids: false

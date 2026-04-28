@@ -80,10 +80,11 @@ hosts-records naar `10.0.1.21` wijzen, zijn de standaard routes:
 
 | Service | Traefik URL |
 | --- | --- |
-| Radarr | `http://radarr.docker01.home.arpa` |
-| Sonarr | `http://sonarr.docker01.home.arpa` |
-| SABnzbd | `http://sabnzbd.docker01.home.arpa` |
-| Homepage | `http://homepage.docker01.home.arpa` |
+| Base dashboard | `http://thuis.infinita.be` |
+| Radarr | `http://radarr.thuis.infinita.be` |
+| Sonarr | `http://sonarr.thuis.infinita.be` |
+| SABnzbd | `http://sabnzbd.thuis.infinita.be` |
+| Homepage | `http://homepage.thuis.infinita.be` |
 
 Homepage configuratie wordt vanuit de Docker role beheerd en naar
 `/opt/media-stack/config/homepage` uitgerold. De dashboardkaarten voor Radarr,

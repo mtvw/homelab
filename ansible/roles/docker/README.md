@@ -39,10 +39,11 @@ fallback. De standaard hostnames zijn:
 
 | Service | Traefik URL |
 | --- | --- |
-| Radarr | `http://radarr.docker01.home.arpa` |
-| Sonarr | `http://sonarr.docker01.home.arpa` |
-| SABnzbd | `http://sabnzbd.docker01.home.arpa` |
-| Homepage | `http://homepage.docker01.home.arpa` |
+| Base dashboard | `http://thuis.infinita.be` |
+| Radarr | `http://radarr.thuis.infinita.be` |
+| Sonarr | `http://sonarr.thuis.infinita.be` |
+| SABnzbd | `http://sabnzbd.thuis.infinita.be` |
+| Homepage | `http://homepage.thuis.infinita.be` |
 | Traefik dashboard | `http://10.0.1.21:8081` |
 
 Zorg dat deze hostnames in DNS, DHCP of lokale hosts-files naar `10.0.1.21`
@@ -51,11 +52,12 @@ om Traefik niet te beheren.
 
 Homepage gebruikt `/opt/media-stack/config/homepage` als `/app/config`, mount de
 Docker socket read-only voor containerintegraties en accepteert standaard
-`10.0.1.21:3000` en `homepage.docker01.home.arpa` via
-`HOMEPAGE_ALLOWED_HOSTS`. Homepage gebruikt bewust niet de gedeelde `PUID`/`PGID`
-instellingen, zodat de Docker socket-integratie werkt met de standaard
-containerrechten. Pas `docker_stack_allowed_hosts` aan als Homepage via een
-andere DNS-naam, reverse proxy of ander adres benaderd wordt.
+`10.0.1.21:3000`, `thuis.infinita.be` en `homepage.thuis.infinita.be` via
+`HOMEPAGE_ALLOWED_HOSTS`. Traefik routeert zowel `thuis.infinita.be` als
+`homepage.thuis.infinita.be` naar Homepage. Homepage gebruikt bewust niet de
+gedeelde `PUID`/`PGID` instellingen, zodat de Docker socket-integratie werkt met
+de standaard containerrechten. Pas `docker_stack_allowed_hosts` aan als Homepage
+via een andere DNS-naam, reverse proxy of ander adres benaderd wordt.
 
 De Homepage configuratie wordt door Ansible beheerd vanuit
 `templates/homepage/*.yaml.j2`. Standaard worden kaarten aangemaakt voor

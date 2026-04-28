@@ -70,10 +70,11 @@ Homepage.
    - SABnzbd: `http://10.0.1.21:8080`
    - Homepage: `http://10.0.1.21:3000`
 5. Na DNS/hosts-records naar `10.0.1.21` zijn de Traefik-routes:
-   - Radarr: `http://radarr.docker01.home.arpa`
-   - Sonarr: `http://sonarr.docker01.home.arpa`
-   - SABnzbd: `http://sabnzbd.docker01.home.arpa`
-   - Homepage: `http://homepage.docker01.home.arpa`
+   - Base dashboard: `http://thuis.infinita.be`
+   - Radarr: `http://radarr.thuis.infinita.be`
+   - Sonarr: `http://sonarr.thuis.infinita.be`
+   - SABnzbd: `http://sabnzbd.thuis.infinita.be`
+   - Homepage: `http://homepage.thuis.infinita.be`
    - Traefik dashboard: `http://10.0.1.21:8081`
 
 ## Jellyfin
