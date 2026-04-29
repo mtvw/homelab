@@ -88,6 +88,9 @@ Docker socket read-only voor containerintegraties en accepteert standaard
 gedeelde `PUID`/`PGID` instellingen, zodat de Docker socket-integratie werkt met
 de standaard containerrechten. Pas `docker_stack_allowed_hosts` aan als Homepage
 via een andere DNS-naam, reverse proxy of ander adres benaderd wordt.
+Homepage browserlinks blijven naar Traefik-hostnamen wijzen, maar widget- en
+monitor-URL's gebruiken standaard Docker service-namen zoals `http://sonarr:8989`.
+Die requests worden namelijk vanuit de Homepage-container zelf uitgevoerd.
 
 De Homepage configuratie wordt door Ansible beheerd vanuit
 `templates/homepage/*.yaml.j2`. Standaard worden kaarten aangemaakt voor
@@ -95,6 +98,9 @@ Jellyfin, Radarr, Sonarr, SABnzbd, Prowlarr, Seerr, Homepage, Traefik, WUD,
 Watchtower, Proxmox VE en Proxmox Backup Server. Docker containerstatistieken
 werken via `/var/run/docker.sock`;
 service-widgets worden pas gerenderd wanneer de bijbehorende secrets gezet zijn:
+Omdat `services.yaml` de gerenderde widget-secrets kan bevatten, krijgt dat
+bestand op de Docker host mode `0600`; de overige Homepage configbestanden
+blijven `0644`.
 
 | Variabele | Widget |
 | --- | --- |

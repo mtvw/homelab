@@ -25,14 +25,14 @@
         icon: radarr.png
         href: {{ (('http://' ~ radarr_host) if docker_traefik_enabled else (docker_homepage_base_url ~ ':7878')) | quote }}
         description: Movie management
-        siteMonitor: {{ (docker_homepage_base_url ~ ':7878') | quote }}
+        siteMonitor: {{ docker_homepage_radarr_url | quote }}
         server: {{ docker_homepage_docker_server_name }}
         container: radarr
         showStats: true
 {% if docker_homepage_radarr_api_key | length > 0 %}
         widget:
           type: radarr
-          url: {{ (docker_homepage_base_url ~ ':7878') | quote }}
+          url: {{ docker_homepage_radarr_url | quote }}
           key: {{ docker_homepage_radarr_api_key | quote }}
           enableQueue: true
           fields: ["wanted", "missing", "queued", "movies"]
@@ -42,14 +42,14 @@
         icon: sonarr.png
         href: {{ (('http://' ~ sonarr_host) if docker_traefik_enabled else (docker_homepage_base_url ~ ':8989')) | quote }}
         description: Series management
-        siteMonitor: {{ (docker_homepage_base_url ~ ':8989') | quote }}
+        siteMonitor: {{ docker_homepage_sonarr_url | quote }}
         server: {{ docker_homepage_docker_server_name }}
         container: sonarr
         showStats: true
 {% if docker_homepage_sonarr_api_key | length > 0 %}
         widget:
           type: sonarr
-          url: {{ (docker_homepage_base_url ~ ':8989') | quote }}
+          url: {{ docker_homepage_sonarr_url | quote }}
           key: {{ docker_homepage_sonarr_api_key | quote }}
           enableQueue: true
           fields: ["wanted", "queued", "series"]
@@ -59,14 +59,14 @@
         icon: sabnzbd.png
         href: {{ (('http://' ~ sabnzbd_host) if docker_traefik_enabled else (docker_homepage_base_url ~ ':8080')) | quote }}
         description: Download client
-        siteMonitor: {{ (docker_homepage_base_url ~ ':8080') | quote }}
+        siteMonitor: {{ docker_homepage_sabnzbd_url | quote }}
         server: {{ docker_homepage_docker_server_name }}
         container: sabnzbd
         showStats: true
 {% if docker_homepage_sabnzbd_api_key | length > 0 %}
         widget:
           type: sabnzbd
-          url: {{ (docker_homepage_base_url ~ ':8080') | quote }}
+          url: {{ docker_homepage_sabnzbd_url | quote }}
           key: {{ docker_homepage_sabnzbd_api_key | quote }}
           fields: ["rate", "queue", "timeleft"]
 {% endif %}
@@ -75,14 +75,14 @@
         icon: prowlarr.png
         href: {{ (('http://' ~ prowlarr_host) if docker_traefik_enabled else (docker_homepage_base_url ~ ':9696')) | quote }}
         description: Indexer management
-        siteMonitor: {{ (docker_homepage_base_url ~ ':9696') | quote }}
+        siteMonitor: {{ docker_homepage_prowlarr_url | quote }}
         server: {{ docker_homepage_docker_server_name }}
         container: prowlarr
         showStats: true
 {% if docker_homepage_prowlarr_api_key | length > 0 %}
         widget:
           type: prowlarr
-          url: {{ (docker_homepage_base_url ~ ':9696') | quote }}
+          url: {{ docker_homepage_prowlarr_url | quote }}
           key: {{ docker_homepage_prowlarr_api_key | quote }}
           fields: ["numberOfGrabs", "numberOfQueries", "numberOfFailGrabs", "numberOfFailQueries"]
 {% endif %}
@@ -91,14 +91,14 @@
         icon: seerr.png
         href: {{ (('http://' ~ seerr_host) if docker_traefik_enabled else (docker_homepage_base_url ~ ':5055')) | quote }}
         description: Media requests
-        siteMonitor: {{ (docker_homepage_base_url ~ ':5055') | quote }}
+        siteMonitor: {{ docker_homepage_seerr_url | quote }}
         server: {{ docker_homepage_docker_server_name }}
         container: seerr
         showStats: true
 {% if docker_homepage_seerr_api_key | length > 0 %}
         widget:
           type: seerr
-          url: {{ (docker_homepage_base_url ~ ':5055') | quote }}
+          url: {{ docker_homepage_seerr_url | quote }}
           key: {{ docker_homepage_seerr_api_key | quote }}
           fields: ["pending", "approved", "available"]
 {% endif %}
@@ -108,7 +108,7 @@
         icon: homepage.png
         href: {{ (('http://' ~ homepage_host) if docker_traefik_enabled else (docker_homepage_base_url ~ ':3000')) | quote }}
         description: Homelab dashboard
-        siteMonitor: {{ (docker_homepage_base_url ~ ':3000') | quote }}
+        siteMonitor: {{ docker_homepage_homepage_url | quote }}
         server: {{ docker_homepage_docker_server_name }}
         container: homepage
         showStats: true
@@ -118,7 +118,7 @@
         icon: traefik.png
         href: {{ (docker_homepage_base_url ~ ':' ~ docker_traefik_dashboard_port | string) | quote }}
         description: Docker reverse proxy
-        siteMonitor: {{ (docker_homepage_base_url ~ ':' ~ docker_traefik_dashboard_port | string) | quote }}
+        siteMonitor: {{ docker_homepage_traefik_url | quote }}
         server: {{ docker_homepage_docker_server_name }}
         container: traefik
         showStats: true
@@ -129,7 +129,7 @@
         icon: sh-whats-up-docker.png
         href: {{ (('http://' ~ docker_wud_traefik_host) if docker_traefik_enabled else (docker_homepage_base_url ~ ':' ~ docker_wud_port | string)) | quote }}
         description: Container update dashboard
-        siteMonitor: {{ (docker_homepage_base_url ~ ':' ~ docker_wud_port | string) | quote }}
+        siteMonitor: {{ docker_homepage_wud_url | quote }}
         server: {{ docker_homepage_docker_server_name }}
         container: wud
         showStats: true

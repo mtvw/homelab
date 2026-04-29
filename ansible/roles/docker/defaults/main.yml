@@ -27,6 +27,9 @@ docker_homepage_title: Homelab
 docker_homepage_description: Matthias homelab
 docker_homepage_docker_server_name: docker01
 docker_homepage_base_url: http://thuis.infinita.be
+docker_homepage_homepage_url: http://homepage:3000
+docker_homepage_traefik_url: http://traefik:8080
+docker_homepage_wud_url: http://wud:3000
 docker_homepage_proxmox_url: https://10.0.1.12:8006
 docker_homepage_proxmox_node: pepper
 docker_homepage_proxmox_username: ""
@@ -36,6 +39,11 @@ docker_homepage_pbs_datastore: pbs-main
 docker_homepage_pbs_username: ""
 docker_homepage_pbs_password: ""
 docker_homepage_jellyfin_url: http://10.0.1.22:8096
+docker_homepage_radarr_url: http://radarr:7878
+docker_homepage_sonarr_url: http://sonarr:8989
+docker_homepage_sabnzbd_url: http://sabnzbd:8080
+docker_homepage_prowlarr_url: http://prowlarr:9696
+docker_homepage_seerr_url: http://seerr:5055
 docker_homepage_jellyfin_api_key: ""
 docker_homepage_radarr_api_key: ""
 docker_homepage_sonarr_api_key: ""

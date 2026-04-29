@@ -128,7 +128,7 @@
     dest: "{{ docker_stack_config_path }}/homepage/{{ item }}"
     owner: "{{ docker_stack_puid }}"
     group: "{{ docker_stack_pgid }}"
-    mode: "0644"
+    mode: "{{ '0600' if item == 'services.yaml' else '0644' }}"
   loop: "{{ docker_homepage_config_files }}"
   register: docker_homepage_config
   no_log: "{{ docker_homepage_config_no_log }}"

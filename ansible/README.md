@@ -98,6 +98,8 @@ staan ook op het dashboard; API widgets verschijnen zodra de bijbehorende
 `docker_homepage_*` secret variabelen in inventory, group vars of Ansible Vault
 gezet zijn.
 
+Zie `docs/secrets.md` voor de aanbevolen Vault-flow voor deze waarden.
+
 ## Jellyfin
 
 `make ansible-jellyfin` mount de NAS media export
