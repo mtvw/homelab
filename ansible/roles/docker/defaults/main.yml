@@ -44,12 +44,17 @@ docker_homepage_sonarr_url: http://sonarr:8989
 docker_homepage_sabnzbd_url: http://sabnzbd:8080
 docker_homepage_prowlarr_url: http://prowlarr:9696
 docker_homepage_seerr_url: http://seerr:5055
+docker_homepage_readarr_url: http://readarr:8787
+docker_homepage_audiobookshelf_url: http://audiobookshelf:80
+docker_homepage_wealthfolio_url: http://wealthfolio:8088
 docker_homepage_jellyfin_api_key: ""
 docker_homepage_radarr_api_key: ""
 docker_homepage_sonarr_api_key: ""
 docker_homepage_sabnzbd_api_key: ""
 docker_homepage_prowlarr_api_key: ""
 docker_homepage_seerr_api_key: ""
+docker_homepage_readarr_api_key: ""
+docker_homepage_audiobookshelf_api_key: ""
 docker_homepage_config_files:
   - settings.yaml
   - services.yaml
@@ -142,6 +147,44 @@ docker_media_services:
       timeout: 3s
       interval: 15s
       retries: 3
+  - name: readarr
+    image: ghcr.io/linuxserver/readarr:develop-0.4.18.2805-ls157
+    port: 8787
+    traefik_host: readarr.{{ docker_traefik_domain }}
+    config_subdir: readarr
+    config_mount_path: /config
+    include_stack_ids: true
+    mount_media: true
+    mount_downloads: true
+  - name: audiobookshelf
+    image: ghcr.io/advplyr/audiobookshelf:latest
+    port: 13378
+    target_port: 80
+    traefik_host: audiobookshelf.{{ docker_traefik_domain }}
+    config_subdir: audiobookshelf
+    config_mount_path: /config
+    include_stack_ids: false
+    mount_media: true
+    mount_downloads: false
+    extra_config_subdirs:
+      - audiobookshelf-metadata
+    extra_volumes:
+      - "{{ docker_stack_config_path }}/audiobookshelf-metadata:/metadata"
+  - name: wealthfolio
+    image: ghcr.io/afadil/wealthfolio:latest
+    port: 8088
+    traefik_host: wealthfolio.{{ docker_traefik_domain }}
+    config_subdir: wealthfolio
+    config_mount_path: /data
+    include_stack_ids: false
+    mount_media: false
+    mount_downloads: false
+    environment:
+      WF_LISTEN_ADDR: 0.0.0.0:8088
+      WF_DB_PATH: /data/wealthfolio.db
+      WF_STATIC_DIR: dist
+      WF_AUTH_REQUIRED: "false"
+      WF_SECRET_KEY: "{{ docker_wealthfolio_effective_secret_key | default('') }}"
   - name: homepage
     image: ghcr.io/gethomepage/homepage:latest
     port: 3000

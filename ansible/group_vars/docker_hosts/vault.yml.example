@@ -10,6 +10,8 @@ docker_homepage_sonarr_api_key: "replace-with-sonarr-api-key"
 docker_homepage_sabnzbd_api_key: "replace-with-sabnzbd-api-key"
 docker_homepage_prowlarr_api_key: "replace-with-prowlarr-api-key"
 docker_homepage_seerr_api_key: "replace-with-seerr-api-key"
+docker_homepage_readarr_api_key: "replace-with-readarr-api-key"
+docker_homepage_audiobookshelf_api_key: "replace-with-audiobookshelf-api-key"
 
 docker_homepage_proxmox_username: "replace-with-proxmox-user-or-token-id"
 docker_homepage_proxmox_password: "replace-with-proxmox-password-or-token-secret"

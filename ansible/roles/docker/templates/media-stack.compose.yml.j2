@@ -86,15 +86,18 @@ services:
 {% if service.mount_docker_socket | default(false) %}
       - /var/run/docker.sock:/var/run/docker.sock:ro
 {% endif %}
+{% for volume in service.extra_volumes | default([]) %}
+      - {{ volume }}
+{% endfor %}
     ports:
-      - "{{ service.port }}:{{ service.port }}"
+      - "{{ service.port }}:{{ service.target_port | default(service.port) }}"
 {% if docker_traefik_enabled and (service.traefik_host is defined or service.traefik_extra_hosts is defined) %}
 {% set traefik_hosts = ([service.traefik_host] if service.traefik_host is defined else []) + (service.traefik_extra_hosts | default([])) %}
     labels:
       traefik.enable: "true"
       traefik.http.routers.{{ service.name }}.entrypoints: web
       traefik.http.routers.{{ service.name }}.rule: "{% for host in traefik_hosts %}Host(`{{ host }}`){% if not loop.last %} || {% endif %}{% endfor %}"
-      traefik.http.services.{{ service.name }}.loadbalancer.server.port: "{{ service.port }}"
+      traefik.http.services.{{ service.name }}.loadbalancer.server.port: "{{ service.target_port | default(service.port) }}"
 {% endif %}
 {% if service.healthcheck is defined %}
     healthcheck:

@@ -12,8 +12,8 @@ Verantwoordelijkheden:
 - Traefik als lokale reverse proxy voor de Docker services beheren.
 - Watchtower in monitor-only modus beheren voor image update-detectie.
 - WUD als webdashboard beheren voor beschikbare container image updates.
-- De Radarr, Sonarr, SABnzbd, Prowlarr, Seerr en Homepage containers beheren
-  als systemd-backed Compose stack.
+- De Radarr, Sonarr, SABnzbd, Prowlarr, Seerr, Readarr, Audiobookshelf,
+  Wealthfolio en Homepage containers beheren als systemd-backed Compose stack.
 
 ## Media stack
 
@@ -27,6 +27,9 @@ unit `media-stack.service`.
 | SABnzbd | `8080` |
 | Prowlarr | `9696` |
 | Seerr | `5055` |
+| Readarr | `8787` |
+| Audiobookshelf | `13378` |
+| Wealthfolio | `8088` |
 | Homepage | `3000` |
 | WUD | `3001` |
 | Traefik HTTP entrypoint | `80` |
@@ -54,6 +57,14 @@ docker logs watchtower
 Zet `docker_watchtower_notification_url` om meldingen via een Shoutrrr URL naar
 bijvoorbeeld ntfy, Discord, Slack of e-mail te sturen.
 
+Readarr gebruikt bewust `ghcr.io/linuxserver/readarr:develop-0.4.18.2805-ls157`
+in plaats van de moving `develop` tag, omdat de upstream image deprecated is en
+de generieke manifest geen werkende `linux/amd64` entry meer biedt.
+
+Wealthfolio draait met `WF_AUTH_REQUIRED=false`, passend bij de overige
+interne HTTP-services in deze stack. Voeg app- of proxy-authenticatie toe als
+de Traefik-route buiten het vertrouwde netwerk beschikbaar wordt gemaakt.
+
 Containerconfiguratie staat onder `/opt/media-stack/config`. De NAS media export
 wordt op de VM gemount op `/srv/media` en in de containers beschikbaar gemaakt
 als `/media`. Downloads staan standaard lokaal op `/srv/downloads` en worden in
@@ -72,6 +83,9 @@ fallback. De standaard hostnames zijn:
 | SABnzbd | `http://sabnzbd.thuis.infinita.be` |
 | Prowlarr | `http://prowlarr.thuis.infinita.be` |
 | Seerr | `http://seerr.thuis.infinita.be` |
+| Readarr | `http://readarr.thuis.infinita.be` |
+| Audiobookshelf | `http://audiobookshelf.thuis.infinita.be` |
+| Wealthfolio | `http://wealthfolio.thuis.infinita.be` |
 | Homepage | `http://homepage.thuis.infinita.be` |
 | WUD | `http://wud.thuis.infinita.be` |
 | Traefik dashboard | `http://10.0.1.21:8081` |
@@ -94,9 +108,9 @@ Die requests worden namelijk vanuit de Homepage-container zelf uitgevoerd.
 
 De Homepage configuratie wordt door Ansible beheerd vanuit
 `templates/homepage/*.yaml.j2`. Standaard worden kaarten aangemaakt voor
-Jellyfin, Radarr, Sonarr, SABnzbd, Prowlarr, Seerr, Homepage, Traefik, WUD,
-Watchtower, Proxmox VE en Proxmox Backup Server. Docker containerstatistieken
-werken via `/var/run/docker.sock`;
+Jellyfin, Radarr, Sonarr, SABnzbd, Prowlarr, Seerr, Readarr, Audiobookshelf,
+Wealthfolio, Homepage, Traefik, WUD, Watchtower, Proxmox VE en Proxmox Backup
+Server. Docker containerstatistieken werken via `/var/run/docker.sock`;
 service-widgets worden pas gerenderd wanneer de bijbehorende secrets gezet zijn:
 Omdat `services.yaml` de gerenderde widget-secrets kan bevatten, krijgt dat
 bestand op de Docker host mode `0600`; de overige Homepage configbestanden
@@ -109,6 +123,8 @@ blijven `0644`.
 | `docker_homepage_sabnzbd_api_key` | SABnzbd |
 | `docker_homepage_prowlarr_api_key` | Prowlarr |
 | `docker_homepage_seerr_api_key` | Seerr |
+| `docker_homepage_readarr_api_key` | Readarr |
+| `docker_homepage_audiobookshelf_api_key` | Audiobookshelf |
 | `docker_homepage_jellyfin_api_key` | Jellyfin |
 | `docker_homepage_proxmox_username` + `docker_homepage_proxmox_password` | Proxmox VE |
 | `docker_homepage_pbs_username` + `docker_homepage_pbs_password` | PBS |

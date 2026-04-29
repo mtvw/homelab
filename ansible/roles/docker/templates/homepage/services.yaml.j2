@@ -4,6 +4,9 @@
 {% set sabnzbd_host = docker_media_services | selectattr('name', 'equalto', 'sabnzbd') | map(attribute='traefik_host') | first %}
 {% set prowlarr_host = docker_media_services | selectattr('name', 'equalto', 'prowlarr') | map(attribute='traefik_host') | first %}
 {% set seerr_host = docker_media_services | selectattr('name', 'equalto', 'seerr') | map(attribute='traefik_host') | first %}
+{% set readarr_host = docker_media_services | selectattr('name', 'equalto', 'readarr') | map(attribute='traefik_host') | first %}
+{% set audiobookshelf_host = docker_media_services | selectattr('name', 'equalto', 'audiobookshelf') | map(attribute='traefik_host') | first %}
+{% set wealthfolio_host = docker_media_services | selectattr('name', 'equalto', 'wealthfolio') | map(attribute='traefik_host') | first %}
 {% set homepage_host = docker_media_services | selectattr('name', 'equalto', 'homepage') | map(attribute='traefik_host') | first %}
 - Media:
     - Jellyfin:
@@ -103,6 +106,39 @@
           fields: ["pending", "approved", "available"]
 {% endif %}
 
+    - Readarr:
+        icon: readarr.png
+        href: {{ (('http://' ~ readarr_host) if docker_traefik_enabled else (docker_homepage_base_url ~ ':8787')) | quote }}
+        description: Book management
+        siteMonitor: {{ docker_homepage_readarr_url | quote }}
+        server: {{ docker_homepage_docker_server_name }}
+        container: readarr
+        showStats: true
+{% if docker_homepage_readarr_api_key | length > 0 %}
+        widget:
+          type: readarr
+          url: {{ docker_homepage_readarr_url | quote }}
+          key: {{ docker_homepage_readarr_api_key | quote }}
+          enableQueue: true
+          fields: ["wanted", "queued", "books"]
+{% endif %}
+
+    - Audiobookshelf:
+        icon: audiobookshelf.png
+        href: {{ (('http://' ~ audiobookshelf_host) if docker_traefik_enabled else (docker_homepage_base_url ~ ':13378')) | quote }}
+        description: Audiobook and podcast server
+        siteMonitor: {{ docker_homepage_audiobookshelf_url | quote }}
+        server: {{ docker_homepage_docker_server_name }}
+        container: audiobookshelf
+        showStats: true
+{% if docker_homepage_audiobookshelf_api_key | length > 0 %}
+        widget:
+          type: audiobookshelf
+          url: {{ docker_homepage_audiobookshelf_url | quote }}
+          key: {{ docker_homepage_audiobookshelf_api_key | quote }}
+          fields: ["books", "booksDuration", "podcasts", "podcastsDuration"]
+{% endif %}
+
 - Infrastructure:
     - Homepage:
         icon: homepage.png
@@ -143,6 +179,15 @@
         container: watchtower
         showStats: true
 {% endif %}
+
+    - Wealthfolio:
+        icon: mdi-chart-line
+        href: {{ (('http://' ~ wealthfolio_host) if docker_traefik_enabled else (docker_homepage_base_url ~ ':8088')) | quote }}
+        description: Portfolio tracker
+        siteMonitor: {{ docker_homepage_wealthfolio_url | quote }}
+        server: {{ docker_homepage_docker_server_name }}
+        container: wealthfolio
+        showStats: true
 
     - Proxmox VE:
         icon: proxmox.png

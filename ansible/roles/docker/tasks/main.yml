@@ -113,6 +113,16 @@
   loop: "{{ docker_media_services }}"
   when: docker_stack_enabled
 
+- name: Ensure Docker service extra config directories exist
+  ansible.builtin.file:
+    path: "{{ docker_stack_config_path }}/{{ item.1 }}"
+    state: directory
+    owner: "{{ docker_stack_puid }}"
+    group: "{{ docker_stack_pgid }}"
+    mode: "0755"
+  loop: "{{ docker_media_services | subelements('extra_config_subdirs', skip_missing=True) }}"
+  when: docker_stack_enabled
+
 - name: Ensure WUD store directory exists
   ansible.builtin.file:
     path: "{{ docker_stack_config_path }}/wud"
@@ -121,6 +131,61 @@
     group: "{{ docker_stack_pgid }}"
     mode: "0755"
   when: docker_stack_enabled and docker_wud_enabled
+
+- name: Check Wealthfolio secret key file
+  ansible.builtin.stat:
+    path: "{{ docker_stack_config_path }}/wealthfolio/secret_key"
+  register: docker_wealthfolio_secret_file
+  no_log: true
+  when:
+    - docker_stack_enabled
+    - docker_media_services | selectattr('name', 'equalto', 'wealthfolio') | list | length > 0
+
+- name: Generate Wealthfolio secret key
+  ansible.builtin.command:
+    argv:
+      - openssl
+      - rand
+      - -base64
+      - "32"
+  register: docker_wealthfolio_generated_secret
+  changed_when: true
+  no_log: true
+  when:
+    - docker_stack_enabled
+    - docker_media_services | selectattr('name', 'equalto', 'wealthfolio') | list | length > 0
+    - not docker_wealthfolio_secret_file.stat.exists
+
+- name: Persist generated Wealthfolio secret key
+  ansible.builtin.copy:
+    content: "{{ docker_wealthfolio_generated_secret.stdout }}\n"
+    dest: "{{ docker_stack_config_path }}/wealthfolio/secret_key"
+    owner: "{{ docker_stack_puid }}"
+    group: "{{ docker_stack_pgid }}"
+    mode: "0600"
+  no_log: true
+  when:
+    - docker_stack_enabled
+    - docker_media_services | selectattr('name', 'equalto', 'wealthfolio') | list | length > 0
+    - docker_wealthfolio_generated_secret is defined
+    - docker_wealthfolio_generated_secret.stdout is defined
+
+- name: Read Wealthfolio secret key
+  ansible.builtin.slurp:
+    src: "{{ docker_stack_config_path }}/wealthfolio/secret_key"
+  register: docker_wealthfolio_secret_key_file
+  no_log: true
+  when:
+    - docker_stack_enabled
+    - docker_media_services | selectattr('name', 'equalto', 'wealthfolio') | list | length > 0
+
+- name: Set Wealthfolio effective secret key
+  ansible.builtin.set_fact:
+    docker_wealthfolio_effective_secret_key: "{{ docker_wealthfolio_secret_key_file.content | b64decode | trim }}"
+  no_log: true
+  when:
+    - docker_stack_enabled
+    - docker_media_services | selectattr('name', 'equalto', 'wealthfolio') | list | length > 0
 
 - name: Install Homepage configuration files
   ansible.builtin.template:

@@ -75,6 +75,9 @@ De services zijn bereikbaar op:
 | SABnzbd | `http://10.0.1.21:8080` |
 | Prowlarr | `http://10.0.1.21:9696` |
 | Seerr | `http://10.0.1.21:5055` |
+| Readarr | `http://10.0.1.21:8787` |
+| Audiobookshelf | `http://10.0.1.21:13378` |
+| Wealthfolio | `http://10.0.1.21:8088` |
 | Homepage | `http://10.0.1.21:3000` |
 
 Traefik luistert daarnaast op `http://10.0.1.21:80`. Zodra DNS of lokale
@@ -88,13 +91,17 @@ hosts-records naar `10.0.1.21` wijzen, zijn de standaard routes:
 | SABnzbd | `http://sabnzbd.thuis.infinita.be` |
 | Prowlarr | `http://prowlarr.thuis.infinita.be` |
 | Seerr | `http://seerr.thuis.infinita.be` |
+| Readarr | `http://readarr.thuis.infinita.be` |
+| Audiobookshelf | `http://audiobookshelf.thuis.infinita.be` |
+| Wealthfolio | `http://wealthfolio.thuis.infinita.be` |
 | Homepage | `http://homepage.thuis.infinita.be` |
 
 Homepage configuratie wordt vanuit de Docker role beheerd en naar
 `/opt/media-stack/config/homepage` uitgerold. De dashboardkaarten voor Radarr,
-Sonarr, SABnzbd, Prowlarr, Seerr, Homepage en Traefik gebruiken
-Docker-statistieken via de read-only Docker socket. Jellyfin, Proxmox VE en PBS
-staan ook op het dashboard; API widgets verschijnen zodra de bijbehorende
+Sonarr, SABnzbd, Prowlarr, Seerr, Readarr, Audiobookshelf, Wealthfolio,
+Homepage en Traefik gebruiken Docker-statistieken via de read-only Docker
+socket. Jellyfin, Proxmox VE en PBS staan ook op het dashboard; API widgets
+verschijnen zodra de bijbehorende
 `docker_homepage_*` secret variabelen in inventory, group vars of Ansible Vault
 gezet zijn.
 
