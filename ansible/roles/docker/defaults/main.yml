@@ -89,7 +89,6 @@ docker_media_nas_server: 10.0.1.11
 docker_media_nas_export: /volume1/media
 docker_media_nfs_fstype: nfs4
 docker_media_nfs_options: rw,hard,noatime,noresvport,_netdev,x-systemd.automount,x-systemd.requires=network-online.target
-docker_downloads_path: /srv/downloads
 
 docker_media_services:
   - name: radarr
@@ -100,7 +99,6 @@ docker_media_services:
     config_mount_path: /config
     include_stack_ids: true
     mount_media: true
-    mount_downloads: true
   - name: sonarr
     image: lscr.io/linuxserver/sonarr:latest
     port: 8989
@@ -109,7 +107,6 @@ docker_media_services:
     config_mount_path: /config
     include_stack_ids: true
     mount_media: true
-    mount_downloads: true
   - name: sabnzbd
     image: lscr.io/linuxserver/sabnzbd:latest
     port: 8080
@@ -118,7 +115,6 @@ docker_media_services:
     config_mount_path: /config
     include_stack_ids: true
     mount_media: true
-    mount_downloads: true
   - name: prowlarr
     image: lscr.io/linuxserver/prowlarr:latest
     port: 9696
@@ -127,7 +123,6 @@ docker_media_services:
     config_mount_path: /config
     include_stack_ids: true
     mount_media: false
-    mount_downloads: false
   - name: seerr
     image: ghcr.io/seerr-team/seerr:latest
     port: 5055
@@ -137,7 +132,6 @@ docker_media_services:
     init: true
     include_stack_ids: false
     mount_media: false
-    mount_downloads: false
     environment:
       LOG_LEVEL: info
       PORT: "5055"
@@ -155,7 +149,6 @@ docker_media_services:
     config_mount_path: /config
     include_stack_ids: true
     mount_media: true
-    mount_downloads: true
   - name: audiobookshelf
     image: ghcr.io/advplyr/audiobookshelf:latest
     port: 13378
@@ -165,7 +158,6 @@ docker_media_services:
     config_mount_path: /config
     include_stack_ids: false
     mount_media: true
-    mount_downloads: false
     extra_config_subdirs:
       - audiobookshelf-metadata
     extra_volumes:
@@ -178,7 +170,6 @@ docker_media_services:
     config_mount_path: /data
     include_stack_ids: false
     mount_media: false
-    mount_downloads: false
     environment:
       WF_LISTEN_ADDR: 0.0.0.0:8088
       WF_DB_PATH: /data/wealthfolio.db
@@ -195,7 +186,6 @@ docker_media_services:
     config_mount_path: /app/config
     include_stack_ids: false
     mount_media: false
-    mount_downloads: false
     mount_docker_socket: true
     environment:
       HOMEPAGE_ALLOWED_HOSTS: "{{ docker_stack_allowed_hosts | join(',') }}"

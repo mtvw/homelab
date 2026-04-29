@@ -5,7 +5,6 @@ After=docker.service network-online.target
 {% if docker_media_mount_enabled %}
 RequiresMountsFor={{ docker_media_path }}
 {% endif %}
-RequiresMountsFor={{ docker_downloads_path }}
 
 [Service]
 Type=oneshot

@@ -61,9 +61,10 @@ make ansible-known-hosts
 ## Docker media stack
 
 `make ansible-docker` installeert Docker op `docker01`, mount
-`10.0.1.11:/volume1/media` op `/srv/media`, maakt `/srv/downloads` voor SABnzbd
-en beheert Traefik, Radarr, Sonarr, SABnzbd, Prowlarr, Seerr en Homepage via
-`media-stack.service`.
+`10.0.1.11:/volume1/media` op `/srv/media` en beheert Traefik, Radarr, Sonarr,
+SABnzbd, Prowlarr, Seerr en Homepage via `media-stack.service`. Containers die
+media nodig hebben krijgen dezelfde share als `/media`; configureer
+app-specifieke subdirectories, zoals `/media/Download`, in de applicaties zelf.
 
 De services zijn bereikbaar op:
 

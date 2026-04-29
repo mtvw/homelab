@@ -67,8 +67,9 @@ de Traefik-route buiten het vertrouwde netwerk beschikbaar wordt gemaakt.
 
 Containerconfiguratie staat onder `/opt/media-stack/config`. De NAS media export
 wordt op de VM gemount op `/srv/media` en in de containers beschikbaar gemaakt
-als `/media`. Downloads staan standaard lokaal op `/srv/downloads` en worden in
-de containers beschikbaar gemaakt als `/downloads`.
+als `/media`. De role maakt geen aparte downloadmount; configureer
+app-specifieke subdirectories, zoals `/media/Download`, in SABnzbd, Radarr en
+Sonarr zelf.
 
 Traefik draait standaard mee in dezelfde Compose stack, leest Docker labels via
 de Docker socket en exposeert alleen containers met `traefik.enable=true`.
@@ -132,9 +133,11 @@ blijven `0644`.
 Zet deze waarden via inventory, group vars of Ansible Vault, niet in plain-text
 defaults.
 
-De role valideert standaard dat `/srv/media` leesbaar is en `/srv/downloads`
-schrijfbaar is voor UID/GID `1000`. Zet `docker_media_validate_writable: true`
-als de NAS export door Radarr/Sonarr direct beschreven moet kunnen worden.
+De role valideert standaard dat `/srv/media` leesbaar is voor UID/GID `1000`.
+Zet `docker_media_validate_writable: true` alleen als de root van de NAS export
+zelf door de containers beschreven moet kunnen worden. Op Synology moeten de NFS
+export en maprechten toelaten dat de Docker host als UID/GID `1000` de relevante
+subdirectories beschrijft.
 
 ## Variabelen
 

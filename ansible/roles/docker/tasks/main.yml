@@ -31,9 +31,6 @@
   ansible.builtin.file:
     path: "{{ docker_media_path }}"
     state: directory
-    owner: root
-    group: root
-    mode: "0755"
   when: docker_stack_enabled and docker_media_mount_enabled
 
 - name: Mount Docker media NAS export
@@ -85,22 +82,6 @@
     - path: "{{ docker_stack_config_path }}"
       owner: root
       group: root
-    - path: "{{ docker_downloads_path }}"
-      owner: "{{ docker_stack_puid }}"
-      group: "{{ docker_stack_pgid }}"
-  when: docker_stack_enabled
-
-- name: Validate Docker downloads path is writable
-  ansible.builtin.command:
-    argv:
-      - runuser
-      - -u
-      - "{{ docker_stack_user }}"
-      - --
-      - test
-      - -w
-      - "{{ docker_downloads_path }}"
-  changed_when: false
   when: docker_stack_enabled
 
 - name: Ensure Docker service config directories exist

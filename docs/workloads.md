@@ -62,12 +62,11 @@ Prowlarr, Seerr, Readarr, Audiobookshelf, Wealthfolio en Homepage.
 1. OpenTofu maakt VM `docker01` op `10.0.1.21`.
 2. cloud-init zet `docker01` klaar voor Ansible.
 3. `make ansible-docker` installeert Docker, mount de NAS media export op
-   `/srv/media`, maakt een lokale downloads-directory op `/srv/downloads`, start
-   `media-stack.service` en valideert de daemon plus poorten `7878`, `8989`,
-   `8080`, `9696`, `5055`, `8787`, `13378`, `8088`, `3000`, `3001`, `80` en
-   `8081`. Watchtower controleert dagelijks of er nieuwe container images
-   beschikbaar zijn, maar voert geen updates uit. WUD toont beschikbare updates
-   in een web UI.
+   `/srv/media`, start `media-stack.service` en valideert de daemon plus poorten
+   `7878`, `8989`, `8080`, `9696`, `5055`, `8787`, `13378`, `8088`, `3000`,
+   `3001`, `80` en `8081`. Watchtower controleert dagelijks of er nieuwe
+   container images beschikbaar zijn, maar voert geen updates uit. WUD toont
+   beschikbare updates in een web UI.
 4. De eerste webconfiguratie gebeurt via:
    - Radarr: `http://10.0.1.21:7878`
    - Sonarr: `http://10.0.1.21:8989`
