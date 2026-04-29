@@ -2,6 +2,8 @@
 {% set radarr_host = docker_media_services | selectattr('name', 'equalto', 'radarr') | map(attribute='traefik_host') | first %}
 {% set sonarr_host = docker_media_services | selectattr('name', 'equalto', 'sonarr') | map(attribute='traefik_host') | first %}
 {% set sabnzbd_host = docker_media_services | selectattr('name', 'equalto', 'sabnzbd') | map(attribute='traefik_host') | first %}
+{% set prowlarr_host = docker_media_services | selectattr('name', 'equalto', 'prowlarr') | map(attribute='traefik_host') | first %}
+{% set seerr_host = docker_media_services | selectattr('name', 'equalto', 'seerr') | map(attribute='traefik_host') | first %}
 {% set homepage_host = docker_media_services | selectattr('name', 'equalto', 'homepage') | map(attribute='traefik_host') | first %}
 - Media:
     - Jellyfin:
@@ -67,6 +69,38 @@
           url: {{ (docker_homepage_base_url ~ ':8080') | quote }}
           key: {{ docker_homepage_sabnzbd_api_key | quote }}
           fields: ["rate", "queue", "timeleft"]
+{% endif %}
+
+    - Prowlarr:
+        icon: prowlarr.png
+        href: {{ (('http://' ~ prowlarr_host) if docker_traefik_enabled else (docker_homepage_base_url ~ ':9696')) | quote }}
+        description: Indexer management
+        siteMonitor: {{ (docker_homepage_base_url ~ ':9696') | quote }}
+        server: {{ docker_homepage_docker_server_name }}
+        container: prowlarr
+        showStats: true
+{% if docker_homepage_prowlarr_api_key | length > 0 %}
+        widget:
+          type: prowlarr
+          url: {{ (docker_homepage_base_url ~ ':9696') | quote }}
+          key: {{ docker_homepage_prowlarr_api_key | quote }}
+          fields: ["numberOfGrabs", "numberOfQueries", "numberOfFailGrabs", "numberOfFailQueries"]
+{% endif %}
+
+    - Seerr:
+        icon: seerr.png
+        href: {{ (('http://' ~ seerr_host) if docker_traefik_enabled else (docker_homepage_base_url ~ ':5055')) | quote }}
+        description: Media requests
+        siteMonitor: {{ (docker_homepage_base_url ~ ':5055') | quote }}
+        server: {{ docker_homepage_docker_server_name }}
+        container: seerr
+        showStats: true
+{% if docker_homepage_seerr_api_key | length > 0 %}
+        widget:
+          type: seerr
+          url: {{ (docker_homepage_base_url ~ ':5055') | quote }}
+          key: {{ docker_homepage_seerr_api_key | quote }}
+          fields: ["pending", "approved", "available"]
 {% endif %}
 
 - Infrastructure:

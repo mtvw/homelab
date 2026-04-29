@@ -40,6 +40,8 @@ docker_homepage_jellyfin_api_key: ""
 docker_homepage_radarr_api_key: ""
 docker_homepage_sonarr_api_key: ""
 docker_homepage_sabnzbd_api_key: ""
+docker_homepage_prowlarr_api_key: ""
+docker_homepage_seerr_api_key: ""
 docker_homepage_config_files:
   - settings.yaml
   - services.yaml
@@ -104,6 +106,34 @@ docker_media_services:
     include_stack_ids: true
     mount_media: true
     mount_downloads: true
+  - name: prowlarr
+    image: lscr.io/linuxserver/prowlarr:latest
+    port: 9696
+    traefik_host: prowlarr.{{ docker_traefik_domain }}
+    config_subdir: prowlarr
+    config_mount_path: /config
+    include_stack_ids: true
+    mount_media: false
+    mount_downloads: false
+  - name: seerr
+    image: ghcr.io/seerr-team/seerr:latest
+    port: 5055
+    traefik_host: seerr.{{ docker_traefik_domain }}
+    config_subdir: seerr
+    config_mount_path: /app/config
+    init: true
+    include_stack_ids: false
+    mount_media: false
+    mount_downloads: false
+    environment:
+      LOG_LEVEL: info
+      PORT: "5055"
+    healthcheck:
+      test: wget --no-verbose --tries=1 --spider http://localhost:5055/api/v1/settings/public || exit 1
+      start_period: 20s
+      timeout: 3s
+      interval: 15s
+      retries: 3
   - name: homepage
     image: ghcr.io/gethomepage/homepage:latest
     port: 3000

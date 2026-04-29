@@ -12,8 +12,8 @@ Verantwoordelijkheden:
 - Traefik als lokale reverse proxy voor de Docker services beheren.
 - Watchtower in monitor-only modus beheren voor image update-detectie.
 - WUD als webdashboard beheren voor beschikbare container image updates.
-- De Radarr, Sonarr, SABnzbd en Homepage containers beheren als systemd-backed
-  Compose stack.
+- De Radarr, Sonarr, SABnzbd, Prowlarr, Seerr en Homepage containers beheren
+  als systemd-backed Compose stack.
 
 ## Media stack
 
@@ -25,6 +25,8 @@ unit `media-stack.service`.
 | Radarr | `7878` |
 | Sonarr | `8989` |
 | SABnzbd | `8080` |
+| Prowlarr | `9696` |
+| Seerr | `5055` |
 | Homepage | `3000` |
 | WUD | `3001` |
 | Traefik HTTP entrypoint | `80` |
@@ -68,6 +70,8 @@ fallback. De standaard hostnames zijn:
 | Radarr | `http://radarr.thuis.infinita.be` |
 | Sonarr | `http://sonarr.thuis.infinita.be` |
 | SABnzbd | `http://sabnzbd.thuis.infinita.be` |
+| Prowlarr | `http://prowlarr.thuis.infinita.be` |
+| Seerr | `http://seerr.thuis.infinita.be` |
 | Homepage | `http://homepage.thuis.infinita.be` |
 | WUD | `http://wud.thuis.infinita.be` |
 | Traefik dashboard | `http://10.0.1.21:8081` |
@@ -87,9 +91,9 @@ via een andere DNS-naam, reverse proxy of ander adres benaderd wordt.
 
 De Homepage configuratie wordt door Ansible beheerd vanuit
 `templates/homepage/*.yaml.j2`. Standaard worden kaarten aangemaakt voor
-Jellyfin, Radarr, Sonarr, SABnzbd, Homepage, Traefik, WUD, Watchtower, Proxmox
-VE en Proxmox Backup Server. Docker containerstatistieken werken via
-`/var/run/docker.sock`;
+Jellyfin, Radarr, Sonarr, SABnzbd, Prowlarr, Seerr, Homepage, Traefik, WUD,
+Watchtower, Proxmox VE en Proxmox Backup Server. Docker containerstatistieken
+werken via `/var/run/docker.sock`;
 service-widgets worden pas gerenderd wanneer de bijbehorende secrets gezet zijn:
 
 | Variabele | Widget |
@@ -97,6 +101,8 @@ service-widgets worden pas gerenderd wanneer de bijbehorende secrets gezet zijn:
 | `docker_homepage_radarr_api_key` | Radarr |
 | `docker_homepage_sonarr_api_key` | Sonarr |
 | `docker_homepage_sabnzbd_api_key` | SABnzbd |
+| `docker_homepage_prowlarr_api_key` | Prowlarr |
+| `docker_homepage_seerr_api_key` | Seerr |
 | `docker_homepage_jellyfin_api_key` | Jellyfin |
 | `docker_homepage_proxmox_username` + `docker_homepage_proxmox_password` | Proxmox VE |
 | `docker_homepage_pbs_username` + `docker_homepage_pbs_password` | PBS |

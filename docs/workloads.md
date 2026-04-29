@@ -56,21 +56,23 @@ Ansible is configuratiebeheer, geen VM-provisioninglaag.
 
 `docker01` is een Debian workload VM voor Docker containers. De Docker role
 installeert ook Traefik, Watchtower in monitor-only modus, WUD als
-update-dashboard en de media-stack containers Radarr, Sonarr, SABnzbd en
-Homepage.
+update-dashboard en de media-stack containers Radarr, Sonarr, SABnzbd,
+Prowlarr, Seerr en Homepage.
 
 1. OpenTofu maakt VM `docker01` op `10.0.1.21`.
 2. cloud-init zet `docker01` klaar voor Ansible.
 3. `make ansible-docker` installeert Docker, mount de NAS media export op
    `/srv/media`, maakt een lokale downloads-directory op `/srv/downloads`, start
    `media-stack.service` en valideert de daemon plus poorten `7878`, `8989`,
-   `8080`, `3000`, `3001`, `80` en `8081`. Watchtower controleert dagelijks of
-   er nieuwe container images beschikbaar zijn, maar voert geen updates uit. WUD
-   toont beschikbare updates in een web UI.
+   `8080`, `9696`, `5055`, `3000`, `3001`, `80` en `8081`. Watchtower
+   controleert dagelijks of er nieuwe container images beschikbaar zijn, maar
+   voert geen updates uit. WUD toont beschikbare updates in een web UI.
 4. De eerste webconfiguratie gebeurt via:
    - Radarr: `http://10.0.1.21:7878`
    - Sonarr: `http://10.0.1.21:8989`
    - SABnzbd: `http://10.0.1.21:8080`
+   - Prowlarr: `http://10.0.1.21:9696`
+   - Seerr: `http://10.0.1.21:5055`
    - Homepage: `http://10.0.1.21:3000`
    - WUD: `http://10.0.1.21:3001`
 5. Na DNS/hosts-records naar `10.0.1.21` zijn de Traefik-routes:
@@ -78,6 +80,8 @@ Homepage.
    - Radarr: `http://radarr.thuis.infinita.be`
    - Sonarr: `http://sonarr.thuis.infinita.be`
    - SABnzbd: `http://sabnzbd.thuis.infinita.be`
+   - Prowlarr: `http://prowlarr.thuis.infinita.be`
+   - Seerr: `http://seerr.thuis.infinita.be`
    - Homepage: `http://homepage.thuis.infinita.be`
    - WUD: `http://wud.thuis.infinita.be`
    - Traefik dashboard: `http://10.0.1.21:8081`

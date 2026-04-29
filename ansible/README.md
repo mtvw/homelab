@@ -62,7 +62,7 @@ make ansible-known-hosts
 
 `make ansible-docker` installeert Docker op `docker01`, mount
 `10.0.1.11:/volume1/media` op `/srv/media`, maakt `/srv/downloads` voor SABnzbd
-en beheert Traefik, Radarr, Sonarr, SABnzbd en Homepage via
+en beheert Traefik, Radarr, Sonarr, SABnzbd, Prowlarr, Seerr en Homepage via
 `media-stack.service`.
 
 De services zijn bereikbaar op:
@@ -73,6 +73,8 @@ De services zijn bereikbaar op:
 | Radarr | `http://10.0.1.21:7878` |
 | Sonarr | `http://10.0.1.21:8989` |
 | SABnzbd | `http://10.0.1.21:8080` |
+| Prowlarr | `http://10.0.1.21:9696` |
+| Seerr | `http://10.0.1.21:5055` |
 | Homepage | `http://10.0.1.21:3000` |
 
 Traefik luistert daarnaast op `http://10.0.1.21:80`. Zodra DNS of lokale
@@ -84,14 +86,17 @@ hosts-records naar `10.0.1.21` wijzen, zijn de standaard routes:
 | Radarr | `http://radarr.thuis.infinita.be` |
 | Sonarr | `http://sonarr.thuis.infinita.be` |
 | SABnzbd | `http://sabnzbd.thuis.infinita.be` |
+| Prowlarr | `http://prowlarr.thuis.infinita.be` |
+| Seerr | `http://seerr.thuis.infinita.be` |
 | Homepage | `http://homepage.thuis.infinita.be` |
 
 Homepage configuratie wordt vanuit de Docker role beheerd en naar
 `/opt/media-stack/config/homepage` uitgerold. De dashboardkaarten voor Radarr,
-Sonarr, SABnzbd, Homepage en Traefik gebruiken Docker-statistieken via de
-read-only Docker socket. Jellyfin, Proxmox VE en PBS staan ook op het dashboard;
-API widgets verschijnen zodra de bijbehorende `docker_homepage_*` secret
-variabelen in inventory, group vars of Ansible Vault gezet zijn.
+Sonarr, SABnzbd, Prowlarr, Seerr, Homepage en Traefik gebruiken
+Docker-statistieken via de read-only Docker socket. Jellyfin, Proxmox VE en PBS
+staan ook op het dashboard; API widgets verschijnen zodra de bijbehorende
+`docker_homepage_*` secret variabelen in inventory, group vars of Ansible Vault
+gezet zijn.
 
 ## Jellyfin
 
