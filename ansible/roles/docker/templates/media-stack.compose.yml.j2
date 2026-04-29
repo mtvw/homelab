@@ -18,6 +18,47 @@ services:
     restart: unless-stopped
 
 {% endif %}
+{% if docker_watchtower_enabled %}
+  watchtower:
+    image: {{ docker_watchtower_image }}
+    container_name: watchtower
+    environment:
+      TZ: {{ docker_stack_timezone }}
+      WATCHTOWER_MONITOR_ONLY: "true"
+      WATCHTOWER_SCHEDULE: {{ docker_watchtower_schedule | quote }}
+{% if docker_watchtower_notification_url | length > 0 %}
+      WATCHTOWER_NOTIFICATION_URL: {{ docker_watchtower_notification_url | quote }}
+{% endif %}
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    restart: unless-stopped
+
+{% endif %}
+{% if docker_wud_enabled %}
+  wud:
+    image: {{ docker_wud_image }}
+    container_name: wud
+    environment:
+      TZ: {{ docker_stack_timezone }}
+      WUD_SERVER_PORT: "3000"
+      WUD_WATCHER_LOCAL_SOCKET: /var/run/docker.sock
+      WUD_WATCHER_LOCAL_CRON: {{ docker_wud_schedule | quote }}
+      WUD_WATCHER_LOCAL_WATCHBYDEFAULT: "true"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - {{ docker_stack_config_path }}/wud:/store
+    ports:
+      - "{{ docker_wud_port }}:3000"
+{% if docker_traefik_enabled %}
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.wud.entrypoints: web
+      traefik.http.routers.wud.rule: "Host(`{{ docker_wud_traefik_host }}`)"
+      traefik.http.services.wud.loadbalancer.server.port: "3000"
+{% endif %}
+    restart: unless-stopped
+
+{% endif %}
 {% for service in docker_media_services %}
   {{ service.name }}:
     image: {{ service.image }}

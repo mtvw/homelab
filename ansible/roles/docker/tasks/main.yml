@@ -113,6 +113,15 @@
   loop: "{{ docker_media_services }}"
   when: docker_stack_enabled
 
+- name: Ensure WUD store directory exists
+  ansible.builtin.file:
+    path: "{{ docker_stack_config_path }}/wud"
+    state: directory
+    owner: "{{ docker_stack_puid }}"
+    group: "{{ docker_stack_pgid }}"
+    mode: "0755"
+  when: docker_stack_enabled and docker_wud_enabled
+
 - name: Install Homepage configuration files
   ansible.builtin.template:
     src: "homepage/{{ item }}.j2"
@@ -164,6 +173,13 @@
     timeout: 120
   loop: "{{ docker_media_services }}"
   when: docker_stack_enabled
+
+- name: Ensure WUD HTTP port is reachable locally
+  ansible.builtin.wait_for:
+    host: 127.0.0.1
+    port: "{{ docker_wud_port }}"
+    timeout: 120
+  when: docker_stack_enabled and docker_wud_enabled
 
 - name: Ensure Traefik HTTP and dashboard ports are reachable locally
   ansible.builtin.wait_for:

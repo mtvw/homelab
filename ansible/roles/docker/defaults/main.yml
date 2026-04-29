@@ -55,6 +55,17 @@ docker_traefik_dashboard_insecure: true
 docker_traefik_domain: thuis.infinita.be
 docker_traefik_base_host: thuis.infinita.be
 
+docker_watchtower_enabled: true
+docker_watchtower_image: containrrr/watchtower:latest
+docker_watchtower_schedule: "0 0 8 * * *"
+docker_watchtower_notification_url: ""
+
+docker_wud_enabled: true
+docker_wud_image: getwud/wud:latest
+docker_wud_port: 3001
+docker_wud_traefik_host: wud.{{ docker_traefik_domain }}
+docker_wud_schedule: "0 8 * * *"
+
 docker_media_mount_enabled: true
 docker_media_validate_readable: true
 docker_media_validate_writable: false

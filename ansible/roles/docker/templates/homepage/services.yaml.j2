@@ -90,6 +90,26 @@
         showStats: true
 {% endif %}
 
+{% if docker_wud_enabled %}
+    - What's up Docker:
+        icon: sh-whats-up-docker.png
+        href: {{ (('http://' ~ docker_wud_traefik_host) if docker_traefik_enabled else (docker_homepage_base_url ~ ':' ~ docker_wud_port | string)) | quote }}
+        description: Container update dashboard
+        siteMonitor: {{ (docker_homepage_base_url ~ ':' ~ docker_wud_port | string) | quote }}
+        server: {{ docker_homepage_docker_server_name }}
+        container: wud
+        showStats: true
+{% endif %}
+
+{% if docker_watchtower_enabled %}
+    - Watchtower:
+        icon: watchtower.png
+        description: Image update monitor
+        server: {{ docker_homepage_docker_server_name }}
+        container: watchtower
+        showStats: true
+{% endif %}
+
     - Proxmox VE:
         icon: proxmox.png
         href: {{ docker_homepage_proxmox_url | quote }}

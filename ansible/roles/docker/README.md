@@ -10,6 +10,8 @@ Verantwoordelijkheden:
 - Valideren dat de Docker daemon bereikbaar is.
 - Optioneel de media NAS export mounten op de Docker host.
 - Traefik als lokale reverse proxy voor de Docker services beheren.
+- Watchtower in monitor-only modus beheren voor image update-detectie.
+- WUD als webdashboard beheren voor beschikbare container image updates.
 - De Radarr, Sonarr, SABnzbd en Homepage containers beheren als systemd-backed
   Compose stack.
 
@@ -24,8 +26,31 @@ unit `media-stack.service`.
 | Sonarr | `8989` |
 | SABnzbd | `8080` |
 | Homepage | `3000` |
+| WUD | `3001` |
 | Traefik HTTP entrypoint | `80` |
 | Traefik dashboard | `8081` |
+
+WUD, "What's up Docker", draait standaard op `3001` en toont in een web UI
+welke containers nieuwe image-versies beschikbaar hebben. WUD gebruikt de Docker
+socket read-only en bewaart state onder `/opt/media-stack/config/wud`. De
+standaard Traefik URL is:
+
+| Service | Traefik URL |
+| --- | --- |
+| WUD | `http://wud.thuis.infinita.be` |
+
+Watchtower draait standaard mee zonder poort en met
+`WATCHTOWER_MONITOR_ONLY=true`. Het controleert dagelijks om 08:00 of er nieuwe
+container images beschikbaar zijn, maar voert geen updates uit. Het heeft geen
+dashboard in deze setup; gebruik WUD voor de visuele update-lijst. Bekijk
+Watchtower-meldingen via:
+
+```bash
+docker logs watchtower
+```
+
+Zet `docker_watchtower_notification_url` om meldingen via een Shoutrrr URL naar
+bijvoorbeeld ntfy, Discord, Slack of e-mail te sturen.
 
 Containerconfiguratie staat onder `/opt/media-stack/config`. De NAS media export
 wordt op de VM gemount op `/srv/media` en in de containers beschikbaar gemaakt
@@ -44,6 +69,7 @@ fallback. De standaard hostnames zijn:
 | Sonarr | `http://sonarr.thuis.infinita.be` |
 | SABnzbd | `http://sabnzbd.thuis.infinita.be` |
 | Homepage | `http://homepage.thuis.infinita.be` |
+| WUD | `http://wud.thuis.infinita.be` |
 | Traefik dashboard | `http://10.0.1.21:8081` |
 
 Zorg dat deze hostnames in DNS, DHCP of lokale hosts-files naar `10.0.1.21`
@@ -61,8 +87,9 @@ via een andere DNS-naam, reverse proxy of ander adres benaderd wordt.
 
 De Homepage configuratie wordt door Ansible beheerd vanuit
 `templates/homepage/*.yaml.j2`. Standaard worden kaarten aangemaakt voor
-Jellyfin, Radarr, Sonarr, SABnzbd, Homepage, Traefik, Proxmox VE en Proxmox
-Backup Server. Docker containerstatistieken werken via `/var/run/docker.sock`;
+Jellyfin, Radarr, Sonarr, SABnzbd, Homepage, Traefik, WUD, Watchtower, Proxmox
+VE en Proxmox Backup Server. Docker containerstatistieken werken via
+`/var/run/docker.sock`;
 service-widgets worden pas gerenderd wanneer de bijbehorende secrets gezet zijn:
 
 | Variabele | Widget |
