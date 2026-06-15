@@ -12,7 +12,7 @@ Verantwoordelijkheden:
 - Traefik als lokale reverse proxy voor de Docker services beheren.
 - Watchtower in monitor-only modus beheren voor image update-detectie.
 - WUD als webdashboard beheren voor beschikbare container image updates.
-- De Radarr, Sonarr, SABnzbd, Prowlarr, Seerr, Readarr, Audiobookshelf,
+- De Radarr, Sonarr, Bazarr, SABnzbd, Prowlarr, Seerr, Readarr, Audiobookshelf,
   Wealthfolio en Homepage containers beheren als systemd-backed Compose stack.
 
 ## Media stack
@@ -24,6 +24,7 @@ unit `media-stack.service`.
 | --- | --- |
 | Radarr | `7878` |
 | Sonarr | `8989` |
+| Bazarr | `6767` |
 | SABnzbd | `8080` |
 | Prowlarr | `9696` |
 | Seerr | `5055` |
@@ -83,6 +84,7 @@ fallback. De standaard hostnames zijn:
 | Jellyfin | `https://jellyfin.thuis.infinita.be` |
 | Radarr | `https://radarr.thuis.infinita.be` |
 | Sonarr | `https://sonarr.thuis.infinita.be` |
+| Bazarr | `https://bazarr.thuis.infinita.be` |
 | SABnzbd | `https://sabnzbd.thuis.infinita.be` |
 | Prowlarr | `https://prowlarr.thuis.infinita.be` |
 | Seerr | `https://seerr.thuis.infinita.be` |
@@ -119,9 +121,10 @@ Die requests worden namelijk vanuit de Homepage-container zelf uitgevoerd.
 
 De Homepage configuratie wordt door Ansible beheerd vanuit
 `templates/homepage/*.yaml.j2`. Standaard worden kaarten aangemaakt voor
-Jellyfin, Radarr, Sonarr, SABnzbd, Prowlarr, Seerr, Readarr, Audiobookshelf,
-Wealthfolio, Homepage, Traefik, WUD, Watchtower, Proxmox VE en Proxmox Backup
-Server. Docker containerstatistieken werken via `/var/run/docker.sock`;
+Jellyfin, Radarr, Sonarr, Bazarr, SABnzbd, Prowlarr, Seerr, Readarr,
+Audiobookshelf, Wealthfolio, Homepage, Traefik, WUD, Watchtower, Proxmox VE en
+Proxmox Backup Server. Docker containerstatistieken werken via
+`/var/run/docker.sock`;
 service-widgets worden pas gerenderd wanneer de bijbehorende secrets gezet zijn:
 Omdat `services.yaml` de gerenderde widget-secrets kan bevatten, krijgt dat
 bestand op de Docker host mode `0600`; de overige Homepage configbestanden
@@ -131,6 +134,7 @@ blijven `0644`.
 | --- | --- |
 | `docker_homepage_radarr_api_key` | Radarr |
 | `docker_homepage_sonarr_api_key` | Sonarr |
+| `docker_homepage_bazarr_api_key` | Bazarr |
 | `docker_homepage_sabnzbd_api_key` | SABnzbd |
 | `docker_homepage_prowlarr_api_key` | Prowlarr |
 | `docker_homepage_seerr_api_key` | Seerr |

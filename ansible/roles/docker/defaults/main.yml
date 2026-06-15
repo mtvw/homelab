@@ -44,6 +44,7 @@ docker_homepage_jellyfin_url: http://10.0.1.22:8096
 docker_homepage_jellyfin_href: https://jellyfin.thuis.infinita.be
 docker_homepage_radarr_url: http://radarr:7878
 docker_homepage_sonarr_url: http://sonarr:8989
+docker_homepage_bazarr_url: http://bazarr:6767
 docker_homepage_sabnzbd_url: http://sabnzbd:8080
 docker_homepage_prowlarr_url: http://prowlarr:9696
 docker_homepage_seerr_url: http://seerr:5055
@@ -53,6 +54,7 @@ docker_homepage_wealthfolio_url: http://wealthfolio:8088
 docker_homepage_jellyfin_api_key: ""
 docker_homepage_radarr_api_key: ""
 docker_homepage_sonarr_api_key: ""
+docker_homepage_bazarr_api_key: ""
 docker_homepage_sabnzbd_api_key: ""
 docker_homepage_prowlarr_api_key: ""
 docker_homepage_seerr_api_key: ""
@@ -133,6 +135,14 @@ docker_media_services:
     port: 8989
     traefik_host: sonarr.{{ docker_traefik_domain }}
     config_subdir: sonarr
+    config_mount_path: /config
+    include_stack_ids: true
+    mount_media: true
+  - name: bazarr
+    image: lscr.io/linuxserver/bazarr:latest
+    port: 6767
+    traefik_host: bazarr.{{ docker_traefik_domain }}
+    config_subdir: bazarr
     config_mount_path: /config
     include_stack_ids: true
     mount_media: true

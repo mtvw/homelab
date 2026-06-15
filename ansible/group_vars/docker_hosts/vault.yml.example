@@ -7,6 +7,7 @@
 docker_homepage_jellyfin_api_key: "replace-with-jellyfin-api-key"
 docker_homepage_radarr_api_key: "replace-with-radarr-api-key"
 docker_homepage_sonarr_api_key: "replace-with-sonarr-api-key"
+docker_homepage_bazarr_api_key: "replace-with-bazarr-api-key"
 docker_homepage_sabnzbd_api_key: "replace-with-sabnzbd-api-key"
 docker_homepage_prowlarr_api_key: "replace-with-prowlarr-api-key"
 docker_homepage_seerr_api_key: "replace-with-seerr-api-key"

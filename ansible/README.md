@@ -73,6 +73,7 @@ De services zijn bereikbaar op:
 | Traefik dashboard | `http://10.0.1.21:8081` |
 | Radarr | `http://10.0.1.21:7878` |
 | Sonarr | `http://10.0.1.21:8989` |
+| Bazarr | `http://10.0.1.21:6767` |
 | SABnzbd | `http://10.0.1.21:8080` |
 | Prowlarr | `http://10.0.1.21:9696` |
 | Seerr | `http://10.0.1.21:5055` |
@@ -90,6 +91,7 @@ hosts-records naar `10.0.1.21` wijzen, zijn de standaard routes via HTTPS:
 | Jellyfin | `https://jellyfin.thuis.infinita.be` |
 | Radarr | `https://radarr.thuis.infinita.be` |
 | Sonarr | `https://sonarr.thuis.infinita.be` |
+| Bazarr | `https://bazarr.thuis.infinita.be` |
 | SABnzbd | `https://sabnzbd.thuis.infinita.be` |
 | Prowlarr | `https://prowlarr.thuis.infinita.be` |
 | Seerr | `https://seerr.thuis.infinita.be` |
@@ -106,7 +108,7 @@ een niveau zoals `thuis.infinita.be` of `radarr.infinita.be`. Zie
 
 Homepage configuratie wordt vanuit de Docker role beheerd en naar
 `/opt/media-stack/config/homepage` uitgerold. De dashboardkaarten voor Radarr,
-Sonarr, SABnzbd, Prowlarr, Seerr, Readarr, Audiobookshelf, Wealthfolio,
+Sonarr, Bazarr, SABnzbd, Prowlarr, Seerr, Readarr, Audiobookshelf, Wealthfolio,
 Homepage en Traefik gebruiken Docker-statistieken via de read-only Docker
 socket. Jellyfin, Proxmox VE en PBS staan ook op het dashboard; API widgets
 verschijnen zodra de bijbehorende

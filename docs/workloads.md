@@ -56,20 +56,21 @@ Ansible is configuratiebeheer, geen VM-provisioninglaag.
 
 `docker01` is een Debian workload VM voor Docker containers. De Docker role
 installeert ook Traefik, Watchtower in monitor-only modus, WUD als
-update-dashboard en de media-stack containers Radarr, Sonarr, SABnzbd,
+update-dashboard en de media-stack containers Radarr, Sonarr, Bazarr, SABnzbd,
 Prowlarr, Seerr, Readarr, Audiobookshelf, Wealthfolio en Homepage.
 
 1. OpenTofu maakt VM `docker01` op `10.0.1.21`.
 2. cloud-init zet `docker01` klaar voor Ansible.
 3. `make ansible-docker` installeert Docker, mount de NAS media export op
    `/srv/media`, start `media-stack.service` en valideert de daemon plus poorten
-   `7878`, `8989`, `8080`, `9696`, `5055`, `8787`, `13378`, `8088`, `3000`,
-   `3001`, `80`, `443` en `8081`. Watchtower controleert dagelijks of er nieuwe
-   container images beschikbaar zijn, maar voert geen updates uit. WUD toont
-   beschikbare updates in een web UI.
+   `7878`, `8989`, `6767`, `8080`, `9696`, `5055`, `8787`, `13378`, `8088`,
+   `3000`, `3001`, `80`, `443` en `8081`. Watchtower controleert dagelijks of
+   er nieuwe container images beschikbaar zijn, maar voert geen updates uit. WUD
+   toont beschikbare updates in een web UI.
 4. De eerste webconfiguratie gebeurt via:
    - Radarr: `http://10.0.1.21:7878`
    - Sonarr: `http://10.0.1.21:8989`
+   - Bazarr: `http://10.0.1.21:6767`
    - SABnzbd: `http://10.0.1.21:8080`
    - Prowlarr: `http://10.0.1.21:9696`
    - Seerr: `http://10.0.1.21:5055`
@@ -83,6 +84,7 @@ Prowlarr, Seerr, Readarr, Audiobookshelf, Wealthfolio en Homepage.
    - Jellyfin: `https://jellyfin.thuis.infinita.be`
    - Radarr: `https://radarr.thuis.infinita.be`
    - Sonarr: `https://sonarr.thuis.infinita.be`
+   - Bazarr: `https://bazarr.thuis.infinita.be`
    - SABnzbd: `https://sabnzbd.thuis.infinita.be`
    - Prowlarr: `https://prowlarr.thuis.infinita.be`
    - Seerr: `https://seerr.thuis.infinita.be`

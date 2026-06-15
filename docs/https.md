@@ -82,6 +82,7 @@ https://thuis.infinita.be
 https://jellyfin.thuis.infinita.be
 https://radarr.thuis.infinita.be
 https://sonarr.thuis.infinita.be
+https://bazarr.thuis.infinita.be
 https://sabnzbd.thuis.infinita.be
 https://prowlarr.thuis.infinita.be
 https://seerr.thuis.infinita.be
