@@ -64,7 +64,7 @@ Prowlarr, Seerr, Readarr, Audiobookshelf, Wealthfolio en Homepage.
 3. `make ansible-docker` installeert Docker, mount de NAS media export op
    `/srv/media`, start `media-stack.service` en valideert de daemon plus poorten
    `7878`, `8989`, `8080`, `9696`, `5055`, `8787`, `13378`, `8088`, `3000`,
-   `3001`, `80` en `8081`. Watchtower controleert dagelijks of er nieuwe
+   `3001`, `80`, `443` en `8081`. Watchtower controleert dagelijks of er nieuwe
    container images beschikbaar zijn, maar voert geen updates uit. WUD toont
    beschikbare updates in een web UI.
 4. De eerste webconfiguratie gebeurt via:
@@ -79,17 +79,18 @@ Prowlarr, Seerr, Readarr, Audiobookshelf, Wealthfolio en Homepage.
    - Homepage: `http://10.0.1.21:3000`
    - WUD: `http://10.0.1.21:3001`
 5. Na DNS/hosts-records naar `10.0.1.21` zijn de Traefik-routes:
-   - Base dashboard: `http://thuis.infinita.be`
-   - Radarr: `http://radarr.thuis.infinita.be`
-   - Sonarr: `http://sonarr.thuis.infinita.be`
-   - SABnzbd: `http://sabnzbd.thuis.infinita.be`
-   - Prowlarr: `http://prowlarr.thuis.infinita.be`
-   - Seerr: `http://seerr.thuis.infinita.be`
-   - Readarr: `http://readarr.thuis.infinita.be`
-   - Audiobookshelf: `http://audiobookshelf.thuis.infinita.be`
-   - Wealthfolio: `http://wealthfolio.thuis.infinita.be`
-   - Homepage: `http://homepage.thuis.infinita.be`
-   - WUD: `http://wud.thuis.infinita.be`
+   - Base dashboard: `https://thuis.infinita.be`
+   - Jellyfin: `https://jellyfin.thuis.infinita.be`
+   - Radarr: `https://radarr.thuis.infinita.be`
+   - Sonarr: `https://sonarr.thuis.infinita.be`
+   - SABnzbd: `https://sabnzbd.thuis.infinita.be`
+   - Prowlarr: `https://prowlarr.thuis.infinita.be`
+   - Seerr: `https://seerr.thuis.infinita.be`
+   - Readarr: `https://readarr.thuis.infinita.be`
+   - Audiobookshelf: `https://audiobookshelf.thuis.infinita.be`
+   - Wealthfolio: `https://wealthfolio.thuis.infinita.be`
+   - Homepage: `https://homepage.thuis.infinita.be`
+   - WUD: `https://wud.thuis.infinita.be`
    - Traefik dashboard: `http://10.0.1.21:8081`
 
 ## Jellyfin
@@ -102,3 +103,5 @@ Prowlarr, Seerr, Readarr, Audiobookshelf, Wealthfolio en Homepage.
 4. `make ansible-jellyfin` installeert Jellyfin, mount de NAS media export op
    `/media` en valideert poort `8096`.
 5. De eerste Jellyfin setup gebeurt in de web UI op `http://10.0.1.22:8096`.
+   Na DNS en de Docker Traefik rollout is Jellyfin ook bereikbaar via
+   `https://jellyfin.thuis.infinita.be`.

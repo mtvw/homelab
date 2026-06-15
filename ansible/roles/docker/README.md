@@ -33,6 +33,7 @@ unit `media-stack.service`.
 | Homepage | `3000` |
 | WUD | `3001` |
 | Traefik HTTP entrypoint | `80` |
+| Traefik HTTPS entrypoint | `443` |
 | Traefik dashboard | `8081` |
 
 WUD, "What's up Docker", draait standaard op `3001` en toont in een web UI
@@ -42,7 +43,7 @@ standaard Traefik URL is:
 
 | Service | Traefik URL |
 | --- | --- |
-| WUD | `http://wud.thuis.infinita.be` |
+| WUD | `https://wud.thuis.infinita.be` |
 
 Watchtower draait standaard mee zonder poort en met
 `WATCHTOWER_MONITOR_ONLY=true`. Het controleert dagelijks om 08:00 of er nieuwe
@@ -78,22 +79,31 @@ fallback. De standaard hostnames zijn:
 
 | Service | Traefik URL |
 | --- | --- |
-| Base dashboard | `http://thuis.infinita.be` |
-| Radarr | `http://radarr.thuis.infinita.be` |
-| Sonarr | `http://sonarr.thuis.infinita.be` |
-| SABnzbd | `http://sabnzbd.thuis.infinita.be` |
-| Prowlarr | `http://prowlarr.thuis.infinita.be` |
-| Seerr | `http://seerr.thuis.infinita.be` |
-| Readarr | `http://readarr.thuis.infinita.be` |
-| Audiobookshelf | `http://audiobookshelf.thuis.infinita.be` |
-| Wealthfolio | `http://wealthfolio.thuis.infinita.be` |
-| Homepage | `http://homepage.thuis.infinita.be` |
-| WUD | `http://wud.thuis.infinita.be` |
-| Traefik dashboard | `http://10.0.1.21:8081` |
+| Base dashboard | `https://thuis.infinita.be` |
+| Jellyfin | `https://jellyfin.thuis.infinita.be` |
+| Radarr | `https://radarr.thuis.infinita.be` |
+| Sonarr | `https://sonarr.thuis.infinita.be` |
+| SABnzbd | `https://sabnzbd.thuis.infinita.be` |
+| Prowlarr | `https://prowlarr.thuis.infinita.be` |
+| Seerr | `https://seerr.thuis.infinita.be` |
+| Readarr | `https://readarr.thuis.infinita.be` |
+| Audiobookshelf | `https://audiobookshelf.thuis.infinita.be` |
+| Wealthfolio | `https://wealthfolio.thuis.infinita.be` |
+| Homepage | `https://homepage.thuis.infinita.be` |
+| WUD | `https://wud.thuis.infinita.be` |
+| Traefik dashboard | `http://thuis.infinita.be:8081` |
 
-Zorg dat deze hostnames in DNS, DHCP of lokale hosts-files naar `10.0.1.21`
-wijzen, of pas `docker_traefik_domain` aan. Zet `docker_traefik_enabled: false`
-om Traefik niet te beheren.
+Traefik gebruikt standaard een bestaand certificaat onder
+`/opt/media-stack/config/traefik/certs`, luistert op `443` en redirect HTTP naar
+HTTPS. Docker containers worden via Docker labels gerouteerd; Jellyfin draait op
+`jellyfin01` en wordt via Traefik dynamic file config naar
+`http://10.0.1.22:8096` geproxied. Voor de huidige hostnames moet het
+certificaat `*.thuis.infinita.be` dekken; een wildcard `*.infinita.be` dekt wel
+`thuis.infinita.be`, maar niet `radarr.thuis.infinita.be`. Zet
+`docker_traefik_acme_enabled: true` en `docker_traefik_provided_cert_enabled:
+false` als Traefik zelf Let's Encrypt-certificaten moet aanvragen. Zet
+`docker_traefik_enabled: false` om Traefik niet te beheren, of
+`docker_traefik_https_enabled: false` voor een tijdelijke HTTP-only fallback.
 
 Homepage gebruikt `/opt/media-stack/config/homepage` als `/app/config`, mount de
 Docker socket read-only voor containerintegraties en accepteert standaard

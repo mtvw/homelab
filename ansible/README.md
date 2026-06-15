@@ -82,20 +82,27 @@ De services zijn bereikbaar op:
 | Homepage | `http://10.0.1.21:3000` |
 
 Traefik luistert daarnaast op `http://10.0.1.21:80`. Zodra DNS of lokale
-hosts-records naar `10.0.1.21` wijzen, zijn de standaard routes:
+hosts-records naar `10.0.1.21` wijzen, zijn de standaard routes via HTTPS:
 
 | Service | Traefik URL |
 | --- | --- |
-| Base dashboard | `http://thuis.infinita.be` |
-| Radarr | `http://radarr.thuis.infinita.be` |
-| Sonarr | `http://sonarr.thuis.infinita.be` |
-| SABnzbd | `http://sabnzbd.thuis.infinita.be` |
-| Prowlarr | `http://prowlarr.thuis.infinita.be` |
-| Seerr | `http://seerr.thuis.infinita.be` |
-| Readarr | `http://readarr.thuis.infinita.be` |
-| Audiobookshelf | `http://audiobookshelf.thuis.infinita.be` |
-| Wealthfolio | `http://wealthfolio.thuis.infinita.be` |
-| Homepage | `http://homepage.thuis.infinita.be` |
+| Base dashboard | `https://thuis.infinita.be` |
+| Jellyfin | `https://jellyfin.thuis.infinita.be` |
+| Radarr | `https://radarr.thuis.infinita.be` |
+| Sonarr | `https://sonarr.thuis.infinita.be` |
+| SABnzbd | `https://sabnzbd.thuis.infinita.be` |
+| Prowlarr | `https://prowlarr.thuis.infinita.be` |
+| Seerr | `https://seerr.thuis.infinita.be` |
+| Readarr | `https://readarr.thuis.infinita.be` |
+| Audiobookshelf | `https://audiobookshelf.thuis.infinita.be` |
+| Wealthfolio | `https://wealthfolio.thuis.infinita.be` |
+| Homepage | `https://homepage.thuis.infinita.be` |
+
+Traefik gebruikt standaard een bestaand certificaat onder
+`/opt/media-stack/config/traefik/certs`. Voor deze hostnames moet dat
+certificaat `*.thuis.infinita.be` dekken; `*.infinita.be` dekt alleen namen op
+een niveau zoals `thuis.infinita.be` of `radarr.infinita.be`. Zie
+`docs/https.md` voor de rollout en de ACME fallback.
 
 Homepage configuratie wordt vanuit de Docker role beheerd en naar
 `/opt/media-stack/config/homepage` uitgerold. De dashboardkaarten voor Radarr,

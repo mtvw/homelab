@@ -8,12 +8,46 @@ services:
       - --api.dashboard=true
       - --api.insecure={{ docker_traefik_dashboard_insecure | string | lower }}
       - --entrypoints.web.address=:80
+{% if docker_traefik_https_enabled %}
+      - --entrypoints.{{ docker_traefik_https_entrypoint }}.address=:443
+{% if docker_traefik_https_redirect %}
+      - --entrypoints.web.http.redirections.entrypoint.to={{ docker_traefik_https_entrypoint }}
+      - --entrypoints.web.http.redirections.entrypoint.scheme=https
+{% endif %}
+{% if docker_traefik_acme_enabled %}
+      - --certificatesresolvers.{{ docker_traefik_acme_resolver }}.acme.storage=/letsencrypt/acme.json
+      - --certificatesresolvers.{{ docker_traefik_acme_resolver }}.acme.httpchallenge=true
+      - --certificatesresolvers.{{ docker_traefik_acme_resolver }}.acme.httpchallenge.entrypoint=web
+{% if docker_traefik_acme_email | length > 0 %}
+      - --certificatesresolvers.{{ docker_traefik_acme_resolver }}.acme.email={{ docker_traefik_acme_email }}
+{% endif %}
+{% if docker_traefik_acme_ca_server | length > 0 %}
+      - --certificatesresolvers.{{ docker_traefik_acme_resolver }}.acme.caserver={{ docker_traefik_acme_ca_server }}
+{% endif %}
+{% endif %}
+{% endif %}
       - --providers.docker=true
       - --providers.docker.exposedbydefault=false
+{% if docker_traefik_external_services | length > 0 or docker_traefik_provided_cert_enabled %}
+      - --providers.file.directory=/etc/traefik/dynamic
+      - --providers.file.watch=true
+{% endif %}
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
+{% if docker_traefik_https_enabled and docker_traefik_acme_enabled %}
+      - {{ docker_traefik_acme_storage | dirname }}:/letsencrypt
+{% endif %}
+{% if docker_traefik_external_services | length > 0 or docker_traefik_provided_cert_enabled %}
+      - {{ docker_traefik_dynamic_config_path }}:/etc/traefik/dynamic:ro
+{% endif %}
+{% if docker_traefik_provided_cert_enabled %}
+      - {{ docker_traefik_cert_config_path }}:/etc/traefik/certs:ro
+{% endif %}
     ports:
       - "{{ docker_traefik_http_port }}:80"
+{% if docker_traefik_https_enabled %}
+      - "{{ docker_traefik_https_port }}:443"
+{% endif %}
       - "{{ docker_traefik_dashboard_port }}:8080"
     restart: unless-stopped
 
@@ -52,7 +86,15 @@ services:
 {% if docker_traefik_enabled %}
     labels:
       traefik.enable: "true"
+{% if docker_traefik_https_enabled %}
+      traefik.http.routers.wud.entrypoints: {{ docker_traefik_https_entrypoint }}
+      traefik.http.routers.wud.tls: "true"
+{% if docker_traefik_acme_enabled %}
+      traefik.http.routers.wud.tls.certresolver: {{ docker_traefik_acme_resolver }}
+{% endif %}
+{% else %}
       traefik.http.routers.wud.entrypoints: web
+{% endif %}
       traefik.http.routers.wud.rule: "Host(`{{ docker_wud_traefik_host }}`)"
       traefik.http.services.wud.loadbalancer.server.port: "3000"
 {% endif %}
@@ -92,7 +134,15 @@ services:
 {% set traefik_hosts = ([service.traefik_host] if service.traefik_host is defined else []) + (service.traefik_extra_hosts | default([])) %}
     labels:
       traefik.enable: "true"
+{% if docker_traefik_https_enabled %}
+      traefik.http.routers.{{ service.name }}.entrypoints: {{ docker_traefik_https_entrypoint }}
+      traefik.http.routers.{{ service.name }}.tls: "true"
+{% if docker_traefik_acme_enabled %}
+      traefik.http.routers.{{ service.name }}.tls.certresolver: {{ docker_traefik_acme_resolver }}
+{% endif %}
+{% else %}
       traefik.http.routers.{{ service.name }}.entrypoints: web
+{% endif %}
       traefik.http.routers.{{ service.name }}.rule: "{% for host in traefik_hosts %}Host(`{{ host }}`){% if not loop.last %} || {% endif %}{% endfor %}"
       traefik.http.services.{{ service.name }}.loadbalancer.server.port: "{{ service.target_port | default(service.port) }}"
 {% endif %}

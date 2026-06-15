@@ -113,6 +113,150 @@
     mode: "0755"
   when: docker_stack_enabled and docker_wud_enabled
 
+- name: Ensure Traefik ACME directory exists
+  ansible.builtin.file:
+    path: "{{ docker_traefik_acme_storage | dirname }}"
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+  when: docker_stack_enabled and docker_traefik_enabled and docker_traefik_https_enabled and docker_traefik_acme_enabled
+
+- name: Check Traefik ACME storage
+  ansible.builtin.stat:
+    path: "{{ docker_traefik_acme_storage }}"
+  register: docker_traefik_acme_storage_stat
+  when: docker_stack_enabled and docker_traefik_enabled and docker_traefik_https_enabled and docker_traefik_acme_enabled
+
+- name: Create Traefik ACME storage
+  ansible.builtin.copy:
+    content: ""
+    dest: "{{ docker_traefik_acme_storage }}"
+    owner: root
+    group: root
+    mode: "0600"
+  when:
+    - docker_stack_enabled
+    - docker_traefik_enabled
+    - docker_traefik_https_enabled
+    - docker_traefik_acme_enabled
+    - not docker_traefik_acme_storage_stat.stat.exists
+
+- name: Ensure Traefik ACME storage permissions
+  ansible.builtin.file:
+    path: "{{ docker_traefik_acme_storage }}"
+    owner: root
+    group: root
+    mode: "0600"
+  when: docker_stack_enabled and docker_traefik_enabled and docker_traefik_https_enabled and docker_traefik_acme_enabled
+
+- name: Ensure Traefik provided certificate directory exists
+  ansible.builtin.file:
+    path: "{{ docker_traefik_cert_config_path }}"
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+  when:
+    - docker_stack_enabled
+    - docker_traefik_enabled
+    - docker_traefik_https_enabled
+    - docker_traefik_provided_cert_enabled
+
+- name: Install provided Traefik certificate
+  ansible.builtin.copy:
+    src: "{{ docker_traefik_cert_src }}"
+    dest: "{{ docker_traefik_cert_file }}"
+    owner: root
+    group: root
+    mode: "0644"
+  no_log: true
+  when:
+    - docker_stack_enabled
+    - docker_traefik_enabled
+    - docker_traefik_https_enabled
+    - docker_traefik_provided_cert_enabled
+    - docker_traefik_cert_src | length > 0
+    - docker_traefik_combined_pem_src | length == 0
+
+- name: Install provided Traefik private key
+  ansible.builtin.copy:
+    src: "{{ docker_traefik_key_src }}"
+    dest: "{{ docker_traefik_key_file }}"
+    owner: root
+    group: root
+    mode: "0600"
+  no_log: true
+  when:
+    - docker_stack_enabled
+    - docker_traefik_enabled
+    - docker_traefik_https_enabled
+    - docker_traefik_provided_cert_enabled
+    - docker_traefik_key_src | length > 0
+    - docker_traefik_combined_pem_src | length == 0
+
+- name: Install provided Traefik combined PEM
+  ansible.builtin.copy:
+    src: "{{ docker_traefik_combined_pem_src }}"
+    dest: "{{ docker_traefik_combined_pem_file }}"
+    owner: root
+    group: root
+    mode: "0600"
+  no_log: true
+  when:
+    - docker_stack_enabled
+    - docker_traefik_enabled
+    - docker_traefik_https_enabled
+    - docker_traefik_provided_cert_enabled
+    - docker_traefik_combined_pem_src | length > 0
+
+- name: Validate provided Traefik certificate files exist
+  ansible.builtin.stat:
+    path: "{{ item }}"
+  loop: "{{ [docker_traefik_combined_pem_file] if docker_traefik_combined_pem_src | length > 0 else [docker_traefik_cert_file, docker_traefik_key_file] }}"
+  register: docker_traefik_provided_cert_files
+  when:
+    - docker_stack_enabled
+    - docker_traefik_enabled
+    - docker_traefik_https_enabled
+    - docker_traefik_provided_cert_enabled
+
+- name: Fail when provided Traefik certificate files are missing
+  ansible.builtin.fail:
+    msg: "Provided Traefik certificate mode is enabled, but {{ item.item }} does not exist. Set docker_traefik_cert_src/docker_traefik_key_src or place the files on docker01."
+  loop: "{{ docker_traefik_provided_cert_files.results }}"
+  when:
+    - docker_stack_enabled
+    - docker_traefik_enabled
+    - docker_traefik_https_enabled
+    - docker_traefik_provided_cert_enabled
+    - not item.stat.exists
+
+- name: Ensure Traefik dynamic config directory exists
+  ansible.builtin.file:
+    path: "{{ docker_traefik_dynamic_config_path }}"
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+  when:
+    - docker_stack_enabled
+    - docker_traefik_enabled
+    - docker_traefik_external_services | length > 0 or docker_traefik_provided_cert_enabled
+
+- name: Install Traefik dynamic external services config
+  ansible.builtin.template:
+    src: traefik-external-services.yml.j2
+    dest: "{{ docker_traefik_dynamic_config_file }}"
+    owner: root
+    group: root
+    mode: "0644"
+  register: docker_traefik_dynamic_config
+  when:
+    - docker_stack_enabled
+    - docker_traefik_enabled
+    - docker_traefik_external_services | length > 0 or docker_traefik_provided_cert_enabled
+
 - name: Check Wealthfolio secret key file
   ansible.builtin.stat:
     path: "{{ docker_stack_config_path }}/wealthfolio/secret_key"
@@ -209,7 +353,7 @@
   ansible.builtin.systemd:
     name: "{{ docker_stack_name }}"
     enabled: true
-    state: "{{ 'restarted' if (docker_stack_compose.changed or (docker_homepage_config is defined and docker_homepage_config.changed)) else 'started' }}"
+    state: "{{ 'restarted' if (docker_stack_compose.changed or (docker_homepage_config is defined and docker_homepage_config.changed) or (docker_traefik_dynamic_config is defined and docker_traefik_dynamic_config.changed)) else 'started' }}"
   when: docker_stack_enabled
 
 - name: Ensure Docker media stack HTTP ports are reachable locally
@@ -236,3 +380,10 @@
     - "{{ docker_traefik_http_port }}"
     - "{{ docker_traefik_dashboard_port }}"
   when: docker_stack_enabled and docker_traefik_enabled
+
+- name: Ensure Traefik HTTPS port is reachable locally
+  ansible.builtin.wait_for:
+    host: 127.0.0.1
+    port: "{{ docker_traefik_https_port }}"
+    timeout: 120
+  when: docker_stack_enabled and docker_traefik_enabled and docker_traefik_https_enabled

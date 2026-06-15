@@ -8,10 +8,11 @@
 {% set audiobookshelf_host = docker_media_services | selectattr('name', 'equalto', 'audiobookshelf') | map(attribute='traefik_host') | first %}
 {% set wealthfolio_host = docker_media_services | selectattr('name', 'equalto', 'wealthfolio') | map(attribute='traefik_host') | first %}
 {% set homepage_host = docker_media_services | selectattr('name', 'equalto', 'homepage') | map(attribute='traefik_host') | first %}
+{% set traefik_scheme = 'https' if docker_traefik_https_enabled else 'http' %}
 - Media:
     - Jellyfin:
         icon: jellyfin.png
-        href: {{ docker_homepage_jellyfin_url | quote }}
+        href: {{ docker_homepage_jellyfin_href | quote }}
         description: Media server
         siteMonitor: {{ docker_homepage_jellyfin_url | quote }}
 {% if docker_homepage_jellyfin_api_key | length > 0 %}
@@ -26,7 +27,7 @@
 
     - Radarr:
         icon: radarr.png
-        href: {{ (('http://' ~ radarr_host) if docker_traefik_enabled else (docker_homepage_base_url ~ ':7878')) | quote }}
+        href: {{ (((traefik_scheme ~ '://') ~ radarr_host) if docker_traefik_enabled else (docker_homepage_base_url ~ ':7878')) | quote }}
         description: Movie management
         siteMonitor: {{ docker_homepage_radarr_url | quote }}
         server: {{ docker_homepage_docker_server_name }}
@@ -43,7 +44,7 @@
 
     - Sonarr:
         icon: sonarr.png
-        href: {{ (('http://' ~ sonarr_host) if docker_traefik_enabled else (docker_homepage_base_url ~ ':8989')) | quote }}
+        href: {{ (((traefik_scheme ~ '://') ~ sonarr_host) if docker_traefik_enabled else (docker_homepage_base_url ~ ':8989')) | quote }}
         description: Series management
         siteMonitor: {{ docker_homepage_sonarr_url | quote }}
         server: {{ docker_homepage_docker_server_name }}
@@ -60,7 +61,7 @@
 
     - SABnzbd:
         icon: sabnzbd.png
-        href: {{ (('http://' ~ sabnzbd_host) if docker_traefik_enabled else (docker_homepage_base_url ~ ':8080')) | quote }}
+        href: {{ (((traefik_scheme ~ '://') ~ sabnzbd_host) if docker_traefik_enabled else (docker_homepage_base_url ~ ':8080')) | quote }}
         description: Download client
         siteMonitor: {{ docker_homepage_sabnzbd_url | quote }}
         server: {{ docker_homepage_docker_server_name }}
@@ -76,7 +77,7 @@
 
     - Prowlarr:
         icon: prowlarr.png
-        href: {{ (('http://' ~ prowlarr_host) if docker_traefik_enabled else (docker_homepage_base_url ~ ':9696')) | quote }}
+        href: {{ (((traefik_scheme ~ '://') ~ prowlarr_host) if docker_traefik_enabled else (docker_homepage_base_url ~ ':9696')) | quote }}
         description: Indexer management
         siteMonitor: {{ docker_homepage_prowlarr_url | quote }}
         server: {{ docker_homepage_docker_server_name }}
@@ -92,7 +93,7 @@
 
     - Seerr:
         icon: seerr.png
-        href: {{ (('http://' ~ seerr_host) if docker_traefik_enabled else (docker_homepage_base_url ~ ':5055')) | quote }}
+        href: {{ (((traefik_scheme ~ '://') ~ seerr_host) if docker_traefik_enabled else (docker_homepage_base_url ~ ':5055')) | quote }}
         description: Media requests
         siteMonitor: {{ docker_homepage_seerr_url | quote }}
         server: {{ docker_homepage_docker_server_name }}
@@ -108,7 +109,7 @@
 
     - Readarr:
         icon: readarr.png
-        href: {{ (('http://' ~ readarr_host) if docker_traefik_enabled else (docker_homepage_base_url ~ ':8787')) | quote }}
+        href: {{ (((traefik_scheme ~ '://') ~ readarr_host) if docker_traefik_enabled else (docker_homepage_base_url ~ ':8787')) | quote }}
         description: Book management
         siteMonitor: {{ docker_homepage_readarr_url | quote }}
         server: {{ docker_homepage_docker_server_name }}
@@ -125,7 +126,7 @@
 
     - Audiobookshelf:
         icon: audiobookshelf.png
-        href: {{ (('http://' ~ audiobookshelf_host) if docker_traefik_enabled else (docker_homepage_base_url ~ ':13378')) | quote }}
+        href: {{ (((traefik_scheme ~ '://') ~ audiobookshelf_host) if docker_traefik_enabled else (docker_homepage_base_url ~ ':13378')) | quote }}
         description: Audiobook and podcast server
         siteMonitor: {{ docker_homepage_audiobookshelf_url | quote }}
         server: {{ docker_homepage_docker_server_name }}
@@ -142,7 +143,7 @@
 - Infrastructure:
     - Homepage:
         icon: homepage.png
-        href: {{ (('http://' ~ homepage_host) if docker_traefik_enabled else (docker_homepage_base_url ~ ':3000')) | quote }}
+        href: {{ (((traefik_scheme ~ '://') ~ homepage_host) if docker_traefik_enabled else (docker_homepage_base_url ~ ':3000')) | quote }}
         description: Homelab dashboard
         siteMonitor: {{ docker_homepage_homepage_url | quote }}
         server: {{ docker_homepage_docker_server_name }}
@@ -152,7 +153,7 @@
 {% if docker_traefik_enabled %}
     - Traefik:
         icon: traefik.png
-        href: {{ (docker_homepage_base_url ~ ':' ~ docker_traefik_dashboard_port | string) | quote }}
+        href: {{ docker_homepage_traefik_dashboard_url | quote }}
         description: Docker reverse proxy
         siteMonitor: {{ docker_homepage_traefik_url | quote }}
         server: {{ docker_homepage_docker_server_name }}
@@ -163,7 +164,7 @@
 {% if docker_wud_enabled %}
     - What's up Docker:
         icon: sh-whats-up-docker.png
-        href: {{ (('http://' ~ docker_wud_traefik_host) if docker_traefik_enabled else (docker_homepage_base_url ~ ':' ~ docker_wud_port | string)) | quote }}
+        href: {{ (((traefik_scheme ~ '://') ~ docker_wud_traefik_host) if docker_traefik_enabled else (docker_homepage_base_url ~ ':' ~ docker_wud_port | string)) | quote }}
         description: Container update dashboard
         siteMonitor: {{ docker_homepage_wud_url | quote }}
         server: {{ docker_homepage_docker_server_name }}
@@ -182,7 +183,7 @@
 
     - Wealthfolio:
         icon: mdi-chart-line
-        href: {{ (('http://' ~ wealthfolio_host) if docker_traefik_enabled else (docker_homepage_base_url ~ ':8088')) | quote }}
+        href: {{ (((traefik_scheme ~ '://') ~ wealthfolio_host) if docker_traefik_enabled else (docker_homepage_base_url ~ ':8088')) | quote }}
         description: Portfolio tracker
         siteMonitor: {{ docker_homepage_wealthfolio_url | quote }}
         server: {{ docker_homepage_docker_server_name }}

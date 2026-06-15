@@ -1,0 +1,38 @@
+---
+{% if docker_traefik_provided_cert_enabled %}
+tls:
+  certificates:
+{% if docker_traefik_combined_pem_src | length > 0 %}
+    - certFile: {{ docker_traefik_combined_pem_container_file | quote }}
+      keyFile: {{ docker_traefik_combined_pem_container_file | quote }}
+{% else %}
+    - certFile: {{ docker_traefik_cert_container_file | quote }}
+      keyFile: {{ docker_traefik_key_container_file | quote }}
+{% endif %}
+
+{% endif %}
+http:
+  routers:
+{% for service in docker_traefik_external_services %}
+    {{ service.name }}:
+      rule: "Host(`{{ service.host }}`)"
+      entryPoints:
+        - {{ docker_traefik_https_entrypoint if docker_traefik_https_enabled else 'web' }}
+      service: {{ service.name }}
+{% if docker_traefik_https_enabled %}
+{% if docker_traefik_acme_enabled %}
+      tls:
+        certResolver: {{ docker_traefik_acme_resolver }}
+{% else %}
+      tls: {}
+{% endif %}
+{% endif %}
+{% endfor %}
+
+  services:
+{% for service in docker_traefik_external_services %}
+    {{ service.name }}:
+      loadBalancer:
+        servers:
+          - url: {{ service.url | quote }}
+{% endfor %}
