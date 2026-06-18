@@ -12,8 +12,9 @@ Verantwoordelijkheden:
 - Traefik als lokale reverse proxy voor de Docker services beheren.
 - Watchtower in monitor-only modus beheren voor image update-detectie.
 - WUD als webdashboard beheren voor beschikbare container image updates.
-- De Radarr, Sonarr, Bazarr, SABnzbd, Prowlarr, Seerr, Readarr, Audiobookshelf,
-  Wealthfolio en Homepage containers beheren als systemd-backed Compose stack.
+- De Radarr, Sonarr, Bazarr, SABnzbd, qBittorrent, Prowlarr, Seerr, Readarr,
+  Audiobookshelf, Wealthfolio, Mealie en Homepage containers beheren als
+  systemd-backed Compose stack.
 
 ## Media stack
 
@@ -26,11 +27,14 @@ unit `media-stack.service`.
 | Sonarr | `8989` |
 | Bazarr | `6767` |
 | SABnzbd | `8080` |
+| qBittorrent | `8082` |
+| qBittorrent peer TCP/UDP | `6881` |
 | Prowlarr | `9696` |
 | Seerr | `5055` |
 | Readarr | `8787` |
 | Audiobookshelf | `13378` |
 | Wealthfolio | `8088` |
+| Mealie | `9000` |
 | Homepage | `3000` |
 | WUD | `3001` |
 | Traefik HTTP entrypoint | `80` |
@@ -67,11 +71,19 @@ Wealthfolio draait met `WF_AUTH_REQUIRED=false`, passend bij de overige
 interne HTTP-services in deze stack. Voeg app- of proxy-authenticatie toe als
 de Traefik-route buiten het vertrouwde netwerk beschikbaar wordt gemaakt.
 
+Mealie draait met lokale SQLite-data onder `/opt/media-stack/config/mealie` en
+`ALLOW_SIGNUP=false`. Maak de eerste gebruiker via de Mealie setupflow, of zet
+tijdelijk signup aan via inventory als je liever via zelfregistratie bootstrapt.
+
+qBittorrent publiceert de web UI op hostpoort `8082` en gebruikt `6881/tcp` plus
+`6881/udp` als torrent peer-poorten. De container ziet de NAS media export als
+`/media`; gebruik bijvoorbeeld `/media/Download` als downloadlocatie.
+
 Containerconfiguratie staat onder `/opt/media-stack/config`. De NAS media export
 wordt op de VM gemount op `/srv/media` en in de containers beschikbaar gemaakt
 als `/media`. De role maakt geen aparte downloadmount; configureer
-app-specifieke subdirectories, zoals `/media/Download`, in SABnzbd, Radarr en
-Sonarr zelf.
+app-specifieke subdirectories, zoals `/media/Download`, in SABnzbd,
+qBittorrent, Radarr en Sonarr zelf.
 
 Traefik draait standaard mee in dezelfde Compose stack, leest Docker labels via
 de Docker socket en exposeert alleen containers met `traefik.enable=true`.
@@ -86,11 +98,13 @@ fallback. De standaard hostnames zijn:
 | Sonarr | `https://sonarr.thuis.infinita.be` |
 | Bazarr | `https://bazarr.thuis.infinita.be` |
 | SABnzbd | `https://sabnzbd.thuis.infinita.be` |
+| qBittorrent | `https://qbittorrent.thuis.infinita.be` |
 | Prowlarr | `https://prowlarr.thuis.infinita.be` |
 | Seerr | `https://seerr.thuis.infinita.be` |
 | Readarr | `https://readarr.thuis.infinita.be` |
 | Audiobookshelf | `https://audiobookshelf.thuis.infinita.be` |
 | Wealthfolio | `https://wealthfolio.thuis.infinita.be` |
+| Mealie | `https://mealie.thuis.infinita.be` |
 | Homepage | `https://homepage.thuis.infinita.be` |
 | WUD | `https://wud.thuis.infinita.be` |
 | Traefik dashboard | `http://thuis.infinita.be:8081` |
@@ -122,8 +136,8 @@ Die requests worden namelijk vanuit de Homepage-container zelf uitgevoerd.
 De Homepage configuratie wordt door Ansible beheerd vanuit
 `templates/homepage/*.yaml.j2`. Standaard worden kaarten aangemaakt voor
 Jellyfin, Radarr, Sonarr, Bazarr, SABnzbd, Prowlarr, Seerr, Readarr,
-Audiobookshelf, Wealthfolio, Homepage, Traefik, WUD, Watchtower, Proxmox VE en
-Proxmox Backup Server. Docker containerstatistieken werken via
+qBittorrent, Audiobookshelf, Wealthfolio, Mealie, Homepage, Traefik, WUD,
+Watchtower, Proxmox VE en Proxmox Backup Server. Docker containerstatistieken werken via
 `/var/run/docker.sock`;
 service-widgets worden pas gerenderd wanneer de bijbehorende secrets gezet zijn:
 Omdat `services.yaml` de gerenderde widget-secrets kan bevatten, krijgt dat

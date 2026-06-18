@@ -62,9 +62,11 @@ make ansible-known-hosts
 
 `make ansible-docker` installeert Docker op `docker01`, mount
 `10.0.1.11:/volume1/media` op `/srv/media` en beheert Traefik, Radarr, Sonarr,
-SABnzbd, Prowlarr, Seerr en Homepage via `media-stack.service`. Containers die
-media nodig hebben krijgen dezelfde share als `/media`; configureer
-app-specifieke subdirectories, zoals `/media/Download`, in de applicaties zelf.
+Bazarr, SABnzbd, qBittorrent, Prowlarr, Seerr, Readarr, Audiobookshelf,
+Wealthfolio, Mealie, Homepage, WUD en Watchtower via `media-stack.service`.
+Containers die media nodig hebben krijgen dezelfde share als `/media`;
+configureer app-specifieke subdirectories, zoals `/media/Download`, in de
+applicaties zelf.
 
 De services zijn bereikbaar op:
 
@@ -75,11 +77,13 @@ De services zijn bereikbaar op:
 | Sonarr | `http://10.0.1.21:8989` |
 | Bazarr | `http://10.0.1.21:6767` |
 | SABnzbd | `http://10.0.1.21:8080` |
+| qBittorrent | `http://10.0.1.21:8082` |
 | Prowlarr | `http://10.0.1.21:9696` |
 | Seerr | `http://10.0.1.21:5055` |
 | Readarr | `http://10.0.1.21:8787` |
 | Audiobookshelf | `http://10.0.1.21:13378` |
 | Wealthfolio | `http://10.0.1.21:8088` |
+| Mealie | `http://10.0.1.21:9000` |
 | Homepage | `http://10.0.1.21:3000` |
 
 Traefik luistert daarnaast op `http://10.0.1.21:80`. Zodra DNS of lokale
@@ -93,11 +97,13 @@ hosts-records naar `10.0.1.21` wijzen, zijn de standaard routes via HTTPS:
 | Sonarr | `https://sonarr.thuis.infinita.be` |
 | Bazarr | `https://bazarr.thuis.infinita.be` |
 | SABnzbd | `https://sabnzbd.thuis.infinita.be` |
+| qBittorrent | `https://qbittorrent.thuis.infinita.be` |
 | Prowlarr | `https://prowlarr.thuis.infinita.be` |
 | Seerr | `https://seerr.thuis.infinita.be` |
 | Readarr | `https://readarr.thuis.infinita.be` |
 | Audiobookshelf | `https://audiobookshelf.thuis.infinita.be` |
 | Wealthfolio | `https://wealthfolio.thuis.infinita.be` |
+| Mealie | `https://mealie.thuis.infinita.be` |
 | Homepage | `https://homepage.thuis.infinita.be` |
 
 Traefik gebruikt standaard een bestaand certificaat onder
@@ -108,10 +114,10 @@ een niveau zoals `thuis.infinita.be` of `radarr.infinita.be`. Zie
 
 Homepage configuratie wordt vanuit de Docker role beheerd en naar
 `/opt/media-stack/config/homepage` uitgerold. De dashboardkaarten voor Radarr,
-Sonarr, Bazarr, SABnzbd, Prowlarr, Seerr, Readarr, Audiobookshelf, Wealthfolio,
-Homepage en Traefik gebruiken Docker-statistieken via de read-only Docker
-socket. Jellyfin, Proxmox VE en PBS staan ook op het dashboard; API widgets
-verschijnen zodra de bijbehorende
+Sonarr, Bazarr, SABnzbd, qBittorrent, Prowlarr, Seerr, Readarr, Audiobookshelf,
+Wealthfolio, Mealie, Homepage en Traefik gebruiken Docker-statistieken via de
+read-only Docker socket. Jellyfin, Proxmox VE en PBS staan ook op het
+dashboard; API widgets verschijnen zodra de bijbehorende
 `docker_homepage_*` secret variabelen in inventory, group vars of Ansible Vault
 gezet zijn.
 

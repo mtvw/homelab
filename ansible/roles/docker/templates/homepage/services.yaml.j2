@@ -3,11 +3,13 @@
 {% set sonarr_host = docker_media_services | selectattr('name', 'equalto', 'sonarr') | map(attribute='traefik_host') | first %}
 {% set bazarr_host = docker_media_services | selectattr('name', 'equalto', 'bazarr') | map(attribute='traefik_host') | first %}
 {% set sabnzbd_host = docker_media_services | selectattr('name', 'equalto', 'sabnzbd') | map(attribute='traefik_host') | first %}
+{% set qbittorrent_host = docker_media_services | selectattr('name', 'equalto', 'qbittorrent') | map(attribute='traefik_host') | first %}
 {% set prowlarr_host = docker_media_services | selectattr('name', 'equalto', 'prowlarr') | map(attribute='traefik_host') | first %}
 {% set seerr_host = docker_media_services | selectattr('name', 'equalto', 'seerr') | map(attribute='traefik_host') | first %}
 {% set readarr_host = docker_media_services | selectattr('name', 'equalto', 'readarr') | map(attribute='traefik_host') | first %}
 {% set audiobookshelf_host = docker_media_services | selectattr('name', 'equalto', 'audiobookshelf') | map(attribute='traefik_host') | first %}
 {% set wealthfolio_host = docker_media_services | selectattr('name', 'equalto', 'wealthfolio') | map(attribute='traefik_host') | first %}
+{% set mealie_host = docker_media_services | selectattr('name', 'equalto', 'mealie') | map(attribute='traefik_host') | first %}
 {% set homepage_host = docker_media_services | selectattr('name', 'equalto', 'homepage') | map(attribute='traefik_host') | first %}
 {% set traefik_scheme = 'https' if docker_traefik_https_enabled else 'http' %}
 - Media:
@@ -90,6 +92,15 @@
           key: {{ docker_homepage_sabnzbd_api_key | quote }}
           fields: ["rate", "queue", "timeleft"]
 {% endif %}
+
+    - qBittorrent:
+        icon: qbittorrent.png
+        href: {{ (((traefik_scheme ~ '://') ~ qbittorrent_host) if docker_traefik_enabled else (docker_homepage_base_url ~ ':8082')) | quote }}
+        description: Torrent client
+        siteMonitor: {{ docker_homepage_qbittorrent_url | quote }}
+        server: {{ docker_homepage_docker_server_name }}
+        container: qbittorrent
+        showStats: true
 
     - Prowlarr:
         icon: prowlarr.png
@@ -204,6 +215,15 @@
         siteMonitor: {{ docker_homepage_wealthfolio_url | quote }}
         server: {{ docker_homepage_docker_server_name }}
         container: wealthfolio
+        showStats: true
+
+    - Mealie:
+        icon: mealie.png
+        href: {{ (((traefik_scheme ~ '://') ~ mealie_host) if docker_traefik_enabled else (docker_homepage_base_url ~ ':9000')) | quote }}
+        description: Recipe manager
+        siteMonitor: {{ docker_homepage_mealie_url | quote }}
+        server: {{ docker_homepage_docker_server_name }}
+        container: mealie
         showStats: true
 
     - Proxmox VE:

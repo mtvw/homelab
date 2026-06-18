@@ -130,6 +130,9 @@ services:
 {% endfor %}
     ports:
       - "{{ service.port }}:{{ service.target_port | default(service.port) }}"
+{% for port in service.extra_ports | default([]) %}
+      - "{{ port }}"
+{% endfor %}
 {% if docker_traefik_enabled and (service.traefik_host is defined or service.traefik_extra_hosts is defined) %}
 {% set traefik_hosts = ([service.traefik_host] if service.traefik_host is defined else []) + (service.traefik_extra_hosts | default([])) %}
     labels:
