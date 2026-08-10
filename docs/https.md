@@ -69,6 +69,10 @@ Let op wildcard-dekking:
    make ansible-docker
    ```
 
+   De playbook valideert het certificaat op vervaldatum en op hostnames
+   `thuis.infinita.be` en `homepage.thuis.infinita.be` voordat Traefik wordt
+   herstart.
+
 8. Controleer op `docker01` de Traefik logs als HTTPS niet werkt:
 
    ```sh

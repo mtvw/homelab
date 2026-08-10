@@ -98,6 +98,10 @@ docker_traefik_key_container_file: /etc/traefik/certs/wildcard.key
 docker_traefik_combined_pem_src: ../../.secrets/traefik/Lets_Encrypt_thuis.infinita.be.pem
 docker_traefik_cert_src: ""
 docker_traefik_key_src: ""
+docker_traefik_cert_checkend_seconds: 86400
+docker_traefik_cert_validate_hosts:
+  - "{{ docker_traefik_base_host }}"
+  - "homepage.{{ docker_traefik_domain }}"
 docker_traefik_external_services:
   - name: jellyfin
     host: jellyfin.{{ docker_traefik_domain }}

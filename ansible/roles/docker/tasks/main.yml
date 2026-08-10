@@ -232,6 +232,41 @@
     - docker_traefik_provided_cert_enabled
     - not item.stat.exists
 
+- name: Validate provided Traefik certificate is not expired
+  ansible.builtin.command:
+    argv:
+      - openssl
+      - x509
+      - -in
+      - "{{ docker_traefik_combined_pem_file if docker_traefik_combined_pem_src | length > 0 else docker_traefik_cert_file }}"
+      - -checkend
+      - "{{ docker_traefik_cert_checkend_seconds | string }}"
+      - -noout
+  changed_when: false
+  when:
+    - docker_stack_enabled
+    - docker_traefik_enabled
+    - docker_traefik_https_enabled
+    - docker_traefik_provided_cert_enabled
+
+- name: Validate provided Traefik certificate hostnames
+  ansible.builtin.command:
+    argv:
+      - openssl
+      - x509
+      - -in
+      - "{{ docker_traefik_combined_pem_file if docker_traefik_combined_pem_src | length > 0 else docker_traefik_cert_file }}"
+      - -noout
+      - -checkhost
+      - "{{ item }}"
+  loop: "{{ docker_traefik_cert_validate_hosts }}"
+  changed_when: false
+  when:
+    - docker_stack_enabled
+    - docker_traefik_enabled
+    - docker_traefik_https_enabled
+    - docker_traefik_provided_cert_enabled
+
 - name: Ensure Traefik dynamic config directory exists
   ansible.builtin.file:
     path: "{{ docker_traefik_dynamic_config_path }}"
