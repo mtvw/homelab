@@ -8,9 +8,8 @@ configuratie in git via OpenTofu, cloud-init, Ansible of idempotente scripts.
 
 | Hostname | IP | Rol | OS |
 | --- | --- | --- | --- |
-| `pepper` | `10.0.1.12` | Proxmox VE node | Proxmox VE 9 |
-| `salt` | `10.0.1.13` | Proxmox VE node | Proxmox VE 9 |
-| `tumuric` | `10.0.1.14` | q-device | Debian/ARM |
+| `pepper` | `10.0.1.12` | Actieve Proxmox VE node | Proxmox VE 9 |
+| `salt` | `10.0.1.13` | Cold standby voor restore bij hardware-falen | Reserved |
 | `pbs01` | `10.0.1.20` | Proxmox Backup Server VM | Debian/x86_64 |
 | `docker01` | `10.0.1.21` | Docker host VM | Debian/x86_64 |
 | NAS | `10.0.1.11` | NFS storage | Extern |
@@ -68,10 +67,9 @@ niet handmatig te worden aangemaakt.
 
 ### 2. OpenTofu
 
-OpenTofu beheert Proxmox-infra: VM's, LXC's, storage resources, cloud-init
-koppelingen en clusterbrede instellingen die via de Proxmox API kunnen.
-Nieuwe VM's en LXC's worden dus hier aangemaakt, niet in Ansible. Zie
-[docs/workloads.md](docs/workloads.md).
+OpenTofu beheert Proxmox-infra: VM's, LXC's, storage resources en cloud-init
+koppelingen die via de Proxmox API kunnen. Nieuwe VM's en LXC's worden dus hier
+aangemaakt, niet in Ansible. Zie [docs/workloads.md](docs/workloads.md).
 
 Eerste lokale setup:
 
@@ -165,9 +163,9 @@ beschrijfbaar, Proxmox ziet de PBS storage en een restore-test is uitgevoerd.
   Ansible/idempotente scripts voor OS- en serviceconfiguratie.
 - Credentials worden niet in git gezet. Gebruik environment variables of een
   genegeerde `terraform.tfvars`.
-- De Proxmox cluster zelf en de q-device join zijn day-0 bootstrap-stappen.
-  OpenTofu documenteert en beheert daarna de clusterbrede configuratie die via de
-  Proxmox API ondersteund wordt.
+- `pepper` is de enige actieve Proxmox node. `salt` blijft gereserveerd als cold
+  standby waarop Proxmox opnieuw geinstalleerd kan worden om backups te
+  restoren.
 - OpenTofu gebruikt een dedicated Proxmox API token. SSH staat standaard uit.
 - Proxmox nodes gebruiken de `no-subscription` repository; de enterprise repo
   wordt na import declaratief uitgeschakeld.

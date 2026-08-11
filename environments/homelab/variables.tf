@@ -51,7 +51,7 @@ variable "nfs_storages" {
     nas_media = {
       export        = "/volume1/media"
       content_types = ["images", "iso", "vztmpl", "backup", "snippets"]
-      nodes         = ["pepper", "salt"]
+      nodes         = ["pepper"]
     }
   }
 }

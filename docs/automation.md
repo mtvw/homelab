@@ -31,8 +31,7 @@ Alleen deze zaken mogen handmatig blijven, tenzij we later expliciet automation
 toevoegen:
 
 - Proxmox VE basisinstallatie op fysieke nodes.
-- Initiële Proxmox cluster creation/join.
-- Initiële q-device join voor `tumuric`.
+- Proxmox reinstall op `salt` bij disaster recovery.
 - Basisnetwerk, gateway en DNS waarop de Proxmox API bereikbaar wordt.
 - NAS basisconfiguratie en exports waarvoor nog geen beheerde API-integratie in
   deze repo bestaat.

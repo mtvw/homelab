@@ -4,6 +4,7 @@ resource "proxmox_download_file" "pbs_debian_cloud_image" {
   content_type   = "import"
   datastore_id   = var.pbs_vm.image_datastore_id
   node_name      = var.pbs_vm.node_name
+  overwrite      = false
   url            = var.pbs_vm.image_url
   file_name      = var.pbs_vm.image_file_name
   upload_timeout = var.pbs_vm.image_download_timeout

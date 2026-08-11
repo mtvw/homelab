@@ -54,33 +54,11 @@
       register: jellyfin_lxc_config
       changed_when: false
 
-    - name: Bind host media mount into Jellyfin container
-      ansible.builtin.command:
-        argv:
-          - pct
-          - set
-          - "{{ jellyfin_lxc_id | string }}"
-          - -mp0
-          - "{{ jellyfin_host_media_path }},mp={{ jellyfin_container_media_path }},ro=1"
-      register: jellyfin_lxc_bind_mount
-      when: "'mp0: ' ~ jellyfin_host_media_path ~ ',mp=' ~ jellyfin_container_media_path not in jellyfin_lxc_config.stdout"
-
-    - name: Restart Jellyfin container after bind mount change
-      ansible.builtin.command:
-        argv:
-          - pct
-          - reboot
-          - "{{ jellyfin_lxc_id | string }}"
-      when: jellyfin_lxc_bind_mount is changed
-
-    - name: Wait for Jellyfin container SSH after restart
-      ansible.builtin.wait_for:
-        host: "{{ jellyfin_lxc_address }}"
-        port: 22
-        timeout: 120
-      delegate_to: localhost
-      become: false
-      when: jellyfin_lxc_bind_mount is changed
+    - name: Validate Jellyfin container media bind mount
+      ansible.builtin.assert:
+        that:
+          - "'mp0: ' ~ jellyfin_host_media_path ~ ',mp=' ~ jellyfin_container_media_path in jellyfin_lxc_config.stdout"
+        fail_msg: "Jellyfin LXC media bind mount is missing. Run OpenTofu before this playbook."
 
 - name: Configure Jellyfin hosts
   hosts: jellyfin_hosts

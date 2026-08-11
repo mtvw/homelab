@@ -3,7 +3,6 @@ output "inventory" {
   value = {
     cluster_name  = var.cluster_name
     proxmox_nodes = local.proxmox_nodes
-    quorum_device = local.quorum_device
     nas           = local.nas
     pbs = merge(local.pbs, {
       endpoint  = var.pbs.endpoint

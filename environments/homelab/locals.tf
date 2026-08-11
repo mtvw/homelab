@@ -5,17 +5,6 @@ locals {
       address = "10.0.1.12"
       role    = "pve"
     }
-    salt = {
-      name    = "salt"
-      address = "10.0.1.13"
-      role    = "pve"
-    }
-  }
-
-  quorum_device = {
-    name    = "tumuric"
-    address = "10.0.1.14"
-    role    = "qdevice"
   }
 
   pbs = {

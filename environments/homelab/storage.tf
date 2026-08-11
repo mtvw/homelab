@@ -3,7 +3,7 @@
 # - storage ID: nas_media
 # - server: 10.0.1.11
 # - export: /volume1/media
-# - nodes: pepper, salt
+# - nodes: pepper
 #
 # This stays documented until the NAS export path is confirmed from Proxmox with:
 #

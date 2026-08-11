@@ -3,9 +3,10 @@
 ## Cluster
 
 - Cluster name: `homelab`.
-- Existing Proxmox VE nodes: `pepper` and `salt`.
-- The initial Proxmox cluster creation/join is treated as day-0 bootstrap state,
-  not as an OpenTofu-managed action.
+- Active Proxmox VE node: `pepper`.
+- `salt` is reserved as cold standby for manual Proxmox reinstall and backup
+  restore if `pepper` fails.
+- There is no active q-device in the desired state.
 - API endpoint is IP-based for now: `https://10.0.1.12:8006/`.
 
 ## Automation
@@ -38,8 +39,7 @@
 - Planned Proxmox storage ID for that export: `nas_media`.
 - PBS should use a separate NAS export, proposed as `/volume1/pbs`, rather than
   sharing the media export.
-- `tumuric` is ARM and remains a q-device only. PBS runs as the x86_64 VM
-  `pbs01` at `10.0.1.20`.
+- PBS runs as the x86_64 VM `pbs01` at `10.0.1.20`.
 
 ## Workloads
 

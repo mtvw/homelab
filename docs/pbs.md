@@ -1,10 +1,9 @@
 # PBS automation plan
 
-Deze configuratie gebruikt een x86_64 VM `pbs01` (`10.0.1.20`) in de Proxmox
-cluster als Proxmox Backup Server. `tumuric` blijft alleen q-device, omdat de
-officiele Proxmox Backup Server packages geen ARM-doelplatform zijn. De NAS
-(`10.0.1.11`) blijft alleen storage-backend. De PBS datastore krijgt een eigen
-NFS export, los van media, ISO's en gewone Proxmox NFS storage.
+Deze configuratie gebruikt een x86_64 VM `pbs01` (`10.0.1.20`) op `pepper` als
+Proxmox Backup Server. De NAS (`10.0.1.11`) blijft alleen storage-backend. De
+PBS datastore krijgt een eigen NFS export, los van media, ISO's en gewone
+Proxmox NFS storage.
 
 Dit document is geen permanent handmatig runbook. PBS moet volgens de vaste
 repo-workflow worden opgezet:
@@ -68,7 +67,7 @@ Voor Synology komt dit ongeveer overeen met:
 
 OpenTofu beheert:
 
-- VM `pbs01` op een Proxmox node.
+- VM `pbs01` op `pepper`.
 - VMID, naam en IP volgens `docs/ipam.md`.
 - Cloud-init user-data en network config.
 - Boot order, autostart, CPU, memory en OS disk.

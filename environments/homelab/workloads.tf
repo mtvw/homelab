@@ -18,6 +18,7 @@ resource "proxmox_download_file" "docker_debian_cloud_image" {
   content_type   = "import"
   datastore_id   = var.docker_vm.image_datastore_id
   node_name      = var.docker_vm.node_name
+  overwrite      = false
   url            = var.docker_vm.image_url
   file_name      = var.docker_vm.image_file_name
   upload_timeout = var.docker_vm.image_download_timeout
@@ -104,6 +105,7 @@ resource "proxmox_download_file" "jellyfin_debian_lxc_template" {
   content_type   = "vztmpl"
   datastore_id   = var.jellyfin_lxc.template_datastore_id
   node_name      = var.jellyfin_lxc.node_name
+  overwrite      = false
   url            = var.jellyfin_lxc.template_url
   file_name      = var.jellyfin_lxc.template_file_name
   upload_timeout = var.jellyfin_lxc.template_download_timeout
@@ -132,6 +134,11 @@ resource "proxmox_virtual_environment_container" "jellyfin01" {
     cores = var.jellyfin_lxc.cores
   }
 
+  features {
+    mount   = ["nfs"]
+    nesting = true
+  }
+
   memory {
     dedicated = var.jellyfin_lxc.memory_mb
     swap      = var.jellyfin_lxc.swap_mb
@@ -140,6 +147,12 @@ resource "proxmox_virtual_environment_container" "jellyfin01" {
   disk {
     datastore_id = var.jellyfin_lxc.disk_datastore_id
     size         = var.jellyfin_lxc.disk_size
+  }
+
+  mount_point {
+    path      = "/media"
+    read_only = true
+    volume    = "/mnt/nas/media"
   }
 
   initialization {

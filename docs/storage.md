@@ -8,7 +8,7 @@ Voorlopige NFS export:
 
 | Storage ID | Export | Nodes | Content |
 | --- | --- | --- | --- |
-| `nas_media` | `/volume1/media` | `pepper`, `salt` | `images`, `iso`, `vztmpl`, `backup`, `snippets` |
+| `nas_media` | `/volume1/media` | `pepper` | `images`, `iso`, `vztmpl`, `backup`, `snippets` |
 
 Controleer de exportnaam op een Proxmox node:
 

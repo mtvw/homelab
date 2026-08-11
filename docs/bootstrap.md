@@ -5,9 +5,9 @@ betrouwbare API, remote executor of beheerde host bestaat. Alles na deze day-0
 grens hoort in OpenTofu, cloud-init, Ansible of idempotente scripts. Zie
 [`automation.md`](automation.md).
 
-## Proxmox cluster
+## Proxmox single-node
 
-De cluster lijkt al aangemaakt. Controleer dit op een Proxmox node:
+`pepper` is de enige actieve Proxmox VE node. Controleer dit op `pepper`:
 
 ```sh
 pvecm status
@@ -16,7 +16,7 @@ pvecm status
 Verwacht:
 
 - cluster name: `homelab`
-- nodes: `pepper`, `salt`
+- nodes: `pepper`
 - quorum: yes
 
 Daarna:
@@ -27,18 +27,24 @@ Daarna:
 4. Import bestaande resources die OpenTofu moet overnemen, zoals de enterprise
    APT repo entries, voordat je ze declaratief beheert.
 
-## q-device op `tumuric`
+## Cold standby `salt`
 
-1. Installeer en configureer `corosync-qnetd` op `tumuric`.
-2. Voeg `tumuric` toe als q-device voor de Proxmox cluster.
-3. Controleer quorumgedrag wanneer een van de twee Proxmox nodes offline is.
+`salt` is geen actieve Proxmox node meer en wordt niet door OpenTofu beheerd.
+Bewaar hostname en IP als gereserveerd hersteldoel. Als `pepper` faalt:
 
-## PBS VM in de cluster
+1. Installeer Proxmox VE opnieuw op `salt`.
+2. Configureer basisnetwerk zodat Proxmox bereikbaar is.
+3. Maak een OpenTofu/API gebruiker en token aan of herstel die volgens
+   [`authentication.md`](authentication.md).
+4. Koppel PBS of herstel eerst `pbs01`, afhankelijk van welke backups nog
+   beschikbaar zijn.
+5. Restore kritieke VM's/LXC's uit PBS.
 
-PBS draait niet op `tumuric`: die host is ARM en blijft alleen q-device.
+## PBS VM
 
-De PBS VM zelf wordt niet handmatig opgezet. OpenTofu moet `pbs01` aanmaken,
-cloud-init moet de VM bereikbaar maken en Ansible moet PBS configureren.
+De PBS VM zelf wordt niet handmatig opgezet. OpenTofu moet `pbs01` op `pepper`
+aanmaken, cloud-init moet de VM bereikbaar maken en Ansible moet PBS
+configureren.
 
 Day-0 blijft alleen:
 
